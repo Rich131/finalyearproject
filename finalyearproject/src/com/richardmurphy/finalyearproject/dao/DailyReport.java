@@ -1,0 +1,77 @@
+package com.richardmurphy.finalyearproject.dao;
+
+public class DailyReport {
+	
+	private String date;
+	private int employeeId;
+	private int aht, acw, custSat, callQuality, fcr, numCalls;
+
+	// constructor
+	public DailyReport() {
+
+	}
+	
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public int getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public int getAht() {
+		return aht;
+	}
+
+	public void setAht(int aht) {
+		this.aht = aht;
+	}
+
+	public int getAcw() {
+		return acw;
+	}
+
+	public void setAcw(int acw) {
+		this.acw = acw;
+	}
+
+	public int getCustSat() {
+		return custSat;
+	}
+
+	public void setCustSat(int custSat) {
+		this.custSat = custSat;
+	}
+
+	public int getCallQuality() {
+		return callQuality;
+	}
+
+	public void setCallQuality(int callQuality) {
+		this.callQuality = callQuality;
+	}
+
+	public int getFcr() {
+		return fcr;
+	}
+
+	public void setFcr(int fcr) {
+		this.fcr = fcr;
+	}
+
+	public int getNumCalls() {
+		return numCalls;
+	}
+
+	public void setNumCalls(int numCalls) {
+		this.numCalls = numCalls;
+	}
+}
