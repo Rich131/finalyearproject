@@ -1,4 +1,4 @@
-package com.richardmurphy.finalyearporject.simulation;
+package com.richardmurphy.finalyearproject.simulation;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
