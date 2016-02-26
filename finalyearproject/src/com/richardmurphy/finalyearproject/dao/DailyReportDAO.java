@@ -30,7 +30,7 @@ public class DailyReportDAO {
 	 * uses anonymous RowMapper class to create a list of Employees from the
 	 * ResultSet object returned from the SQL query
 	 */
-	public List<DailyReport> getEmployees() {
+	public List<DailyReport> getDailyReports() {
 
 		return jdbc.query("select * from dailyReport", new RowMapper<DailyReport>() {
 
@@ -60,7 +60,7 @@ public class DailyReportDAO {
 		
 		return jdbc.update("update dailyReport set employeeId = :employeeId, aht = :aht, "
 				+ "acw = :acw, fcr = :fcr, custSat = :custSat, numCalls = :numCalls, "
-				+ "callQuality = :callQuality where employeeId = :employeeId and dateLogged = :dateLogged", params) == 1;
+				+ "callQuality = :callQuality where employeeId = :employeeId and dateLogged = :date", params) == 1;
 	}
 	
 	// Update batch of records
@@ -74,7 +74,7 @@ public class DailyReportDAO {
 		
 		return jdbc.batchUpdate("update dailyReport set employeeId = :employeeId, aht = :aht, "
 				+ "acw = :acw, fcr = :fcr, custSat = :custSat, numCalls = :numCalls, "
-				+ "callQuality = :callQuality where employeeId = :employeeId and dateLogged = :dateLogged", batchParams);		
+				+ "callQuality = :callQuality where employeeId = :employeeId and dateLogged = :date", batchParams);		
 	}
 	
 	
@@ -82,7 +82,7 @@ public class DailyReportDAO {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(report);
 		
 		return jdbc.update("insert into dailyReport (employeeId, aht, acw, fcr, custSat, callQuality, numCalls, dateLogged) "
-				+ "values (:employeeId, :aht, :acw, :fcr, :custSat, :callQuality, :numCalls, :dateLogged)", params) == 1;
+				+ "values (:employeeId, :aht, :acw, :fcr, :custSat, :callQuality, :numCalls, :date)", params) == 1;
 	}
 	
 	@Transactional
@@ -90,14 +90,14 @@ public class DailyReportDAO {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(reports.toArray());
 		
 		return jdbc.batchUpdate("insert into dailyReport (employeeId, aht, acw, fcr, custSat, callQuality, numCalls, dateLogged) "
-				+ "values (:employeeId, :aht, :acw, :fcr, :custSat, :callQuality, :numCalls, :dateLogged)", batchParams);
+				+ "values (:employeeId, :aht, :acw, :fcr, :custSat, :callQuality, :numCalls, :date)", batchParams);
 	}
 	
 	public boolean delete(int id) {
 		MapSqlParameterSource params = new MapSqlParameterSource("id", id);
 		
 		
-		return jdbc.update("delete from dailyReport where employeeid = :id and dateLogged = :dateLogged", params) == 1;
+		return jdbc.update("delete from dailyReport where employeeid = :id and dateLogged = :date", params) == 1;
 	}
 	
 	public DailyReport getDailyReport(int id, String dateLogged) {
@@ -105,7 +105,7 @@ public class DailyReportDAO {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("id", id);
 
-		return jdbc.queryForObject("select * from dailyReport where employeeId = :id and dateLogged = :dateLogged", params, new RowMapper<DailyReport>() {
+		return jdbc.queryForObject("select * from dailyReport where employeeId = :id and dateLogged = :date", params, new RowMapper<DailyReport>() {
 
 			@Override
 			public DailyReport mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -138,4 +138,30 @@ public class EmployeesDAO {
 
 		});
 	}
+
+	public List<Employee> getUnregisteredEmployees() {
+		// query to select all employee object with no associated user account
+		// TODO: Test this 
+		return jdbc.query("select * from employees e where e.agentId not in (select agentId from users)", new RowMapper<Employee>() {
+
+			@Override
+			public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Employee employee = new Employee();
+
+				employee.setDepartmentId(rs.getInt("departmentId"));
+				employee.setEmployeeId(rs.getInt("employeeId"));
+				employee.setFirstName(rs.getString("firstName"));
+				employee.setSurname(rs.getString("surname"));
+				employee.setStartDate(rs.getString("startDate"));
+				employee.setPatience(rs.getInt("patience"));
+				employee.setIntelligence(rs.getInt("intelligence"));
+				employee.setEmpathy(rs.getInt("empathy"));
+				employee.setExperience(rs.getInt("experience"));
+				employee.setMotivation(rs.getInt("motivation"));
+
+				return employee;
+			}
+
+		});
+	}
 }

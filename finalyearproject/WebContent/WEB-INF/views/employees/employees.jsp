@@ -8,29 +8,33 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Final Year Project | Rich Murphy</title>
+
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
 <link rel="stylesheet" href="<c:url value='/resources/css/main.css'/>"
 	type="text/css">
+
 
 </head>
 <body>
 
-	<p>
-		<a href="${ pageContext.request.contextPath }/employees">View
-			Employees</a>
-	</p>
-	<p>
-		<a href="${ pageContext.request.contextPath }/employees/create">Create
-			New Employee</a>
-	</p>
-	<p>
-		<a href="${ pageContext.request.contextPath }/simulator">Simulator</a>
-	</p>
+	<table class="table">
+		<tr>
+			<th>Department</th>
+			<th>Full Name</th>
+			<th>Start Date</th>
+		</tr>
+		<c:forEach var="emp" items="${employees}">
+			<tr>
+				<td><c:out value="${ emp.departmentId }"></c:out></td>
+				<td><c:out value="${ emp.firstName } ${ emp.surname }"></c:out></td>
+				<td><c:out value="${ emp.startDate }"></c:out></td>
+			</tr>
+		</c:forEach>
+	</table>
 </body>
 </html>

@@ -10,6 +10,7 @@
 		<config>WebContent/WEB-INF/finalyearproject-servlet.xml</config>
 		<config>src/com/richardmurphy/finalyearproject/config/dao-context.xml</config>
 		<config>src/com/richardmurphy/finalyearproject/config/service-context.xml</config>
+		<config>src/com/richardmurphy/finalyearproject/config/security-context.xml</config>
 	</configs>
 	<autoconfigs>
 	</autoconfigs>

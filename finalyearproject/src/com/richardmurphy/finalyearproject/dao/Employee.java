@@ -1,16 +1,33 @@
 // Package
 package com.richardmurphy.finalyearproject.dao;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+
 public class Employee {
 
 	// Attributes
 	private int employeeId;
+	
+	@Size(min=2, max=100, message="Name must be between 2-100 characters")
 	private String firstName;
+	
+	@Size(min=2, max=100, message="Surname must be between 2-100 characters")
 	private String surname;
 	private String startDate;
+	
+	@Email(message="You must enter a valid email address.") 
+	String email;
+	
+	@Min(value=0, message="You must select a department.")
 	private int departmentId;
 
 	// Simulation input metrics
+	@Max(value=100, message="Value must be between 0-100")
+	@Min(value=0, message="Value must be between 0-100")
 	private int intelligence, patience, experience, motivation, empathy;
 
 	// Constructors
