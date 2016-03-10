@@ -1,22 +1,38 @@
 package com.richardmurphy.finalyearproject.dao;
 
 public class DailyReport {
-	
+
 	private String date;
-	private int employeeId;
+	private int employeeId, simId, skillLevel;
 	private int aht, acw, custSat, callQuality, fcr, numCalls;
 
 	// constructor
 	public DailyReport() {
 
 	}
-	
+
+	public int getSkillLevel() {
+		return skillLevel;
+	}
+
+	public void setSkillLevel(int skillLevel) {
+		this.skillLevel = skillLevel;
+	}
+
 	public String getDate() {
 		return date;
 	}
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public int getSimId() {
+		return simId;
+	}
+
+	public void setSimId(int simId) {
+		this.simId = simId;
 	}
 
 	public int getEmployeeId() {

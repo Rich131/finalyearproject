@@ -59,32 +59,42 @@
 							<td><sf:input type="date" path="startDate" name="startDate" /></td>
 						</tr>
 						<tr>
-							<td colspan="2">Following traits must be between 1-99</td>
+							<td colspan="2">Following traits must be between 1-100</td>
 						</tr>
 						<tr>
 							<td class="">Intelligence</td>
 							<td><sf:input type="number" path="intelligence"
-									name="intelligence" min="1" max="99" value="50" /></td>
+									name="intelligence" min="1" max="100" value="50" /></td>
 						</tr>
 						<tr>
 							<td class="">Patience</td>
 							<td><sf:input type="number" path="patience" name="patience"
-									min="1" max="99" value="50" /></td>
+									min="1" max="100" value="50" /></td>
 						</tr>
 						<tr>
 							<td class="">Empathy</td>
 							<td><sf:input type="number" path="empathy" name="empathy"
-									min="1" max="99" value="50" /></td>
+									min="1" max="100" value="50" /></td>
 						</tr>
 						<tr>
 							<td class="">Experience</td>
 							<td><sf:input type="number" path="experience"
-									name="experience" min="1" max="99" value="50" /></td>
+									name="experience" min="1" max="100" value="50" /></td>
 						</tr>
 						<tr>
 							<td class="">Motivation</td>
 							<td><sf:input type="number" path="motivation"
-									name="motivation" min="1" max="99" value="50" /></td>
+									name="motivation" min="1" max="100" value="50" /></td>
+						</tr>
+						<tr>
+							<td class="">Initiative</td>
+							<td><sf:input type="number" path="initiative"
+									name="initiative" min="1" max="100" value="50" /></td>
+						</tr>
+						<tr>
+							<td class="">Communication</td>
+							<td><sf:input type="number" path="communication"
+									name="communication" min="1" max="100" value="50" /></td>
 						</tr>
 						<tr>
 							<td colspan="2"><input class="control" type="submit"

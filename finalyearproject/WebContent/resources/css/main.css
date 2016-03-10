@@ -6,3 +6,12 @@ body {
 	font-size: small;
 	color: red;
 }
+
+.dashboard {
+	border: 1px solid black;
+	border-radius: 2px;
+}
+
+.dashboard-settings input[type=number]{
+    width: 50px;
+} 

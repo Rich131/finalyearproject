@@ -1,13 +1,10 @@
 package com.richardmurphy.finalyearproject.simulation;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import javax.validation.constraints.Max;
@@ -17,19 +14,24 @@ import org.joda.time.LocalDate;
 import com.richardmurphy.finalyearproject.dao.DailyReport;
 import com.richardmurphy.finalyearproject.dao.DailyReportDAO;
 import com.richardmurphy.finalyearproject.dao.Employee;
+import com.richardmurphy.finalyearproject.dao.SummaryReport;
+import com.richardmurphy.finalyearproject.dao.SummaryReportDAO;
 
 public class ReportGenerator {
 
 	private List<DailyReport> reports;
 	private DailyReportDAO reportDao;
-	
+	private SummaryReport summaryReport;
+	private SummaryReportDAO summaryReportDao;
+
 	private Date startDate;
-	
-	@Max(value=101)
+
+	@Max(value = 366)
 	private int duration;
 
 	public ReportGenerator() {
 		reportDao = new DailyReportDAO();
+		summaryReportDao = new SummaryReportDAO();
 	}
 
 	public List<DailyReport> getReports() {
@@ -41,7 +43,7 @@ public class ReportGenerator {
 	}
 
 	/*
-	 * This method will be the main loop that creates daily reports based on
+	 * This method is the main loop that creates daily reports based on
 	 * employees' traits
 	 * 
 	 */
@@ -51,6 +53,7 @@ public class ReportGenerator {
 
 		int numDays = duration;
 		Date date = startDate;
+		
 
 		for (int i = 0; i <= numDays; i++) {
 
@@ -59,45 +62,30 @@ public class ReportGenerator {
 				listOfReports.add(generateSingleReport(e, date));
 
 			}
-			
+
 			// converting from Java Date to Joda LocalDate
 			LocalDate localDate = new LocalDate(date);
-			
+
 			// incrementing day (skipping weekends)
 			localDate = addDaySkippingWeekend(localDate);
-			
+
 			// converting back
 			date = localDate.toDateTimeAtStartOfDay().toDate();
 		}
 
-		// testing purposes only
-		// reportDao.create(listOfReports);
+		createSummaryReport(listOfReports);
 
 		return listOfReports;
 
 	}
-
-	public int getDuration() {
-		return duration;
+	
+	public SummaryReport createSummaryReport(List<DailyReport> dailyReports){
+		// constructor for summary report with list of daily reports calculates aggregate vals from within constructor
+		summaryReport = new SummaryReport(dailyReports);
+		
+		return summaryReport;
 	}
-
-	public DailyReportDAO getReportDao() {
-		return reportDao;
-	}
-
-	public void setReportDao(DailyReportDAO reportDao) {
-		this.reportDao = reportDao;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		System.out.println(startDate.toString());
-		this.startDate = startDate;
-	}
-
+	
 	private DailyReport generateSingleReport(Employee e, Date date) {
 
 		DailyReport dr = new DailyReport();
@@ -116,95 +104,322 @@ public class ReportGenerator {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		dr.setDate(formatter.format(date));
 
+		int ahtTarget, acwTarget, numCallsTarget;
+		double fcrTarget, custSatTarget, callQualityTarget;
 
-		int ahtTarget = 600, acwTarget = 60, numCallsTarget = 35;
-		float fcrTarget = 70, custSatTarget = 7, callQualityTarget = 80;
-
-		int ahtStd = 30, acwStd = 5, numCallsStd = 5, fcrStd = 15, custSatStd = 2, callQualityStd = 15;
+		int ahtStd = 30, acwStd = 5, numCallsStd = 5, fcrStd = 15, custSatStd = 1, callQualityStd = 10;
 
 		Random r = new Random();
-		
+
 		// getting fixed employee traits
 		int intelligence = e.getIntelligence();
 		int empathy = e.getEmpathy();
 		int patience = e.getPatience();
-		
+		int initiative = e.getInitiative(); 
+		int communication = e.getCommunication(); 
+
 		// dynamic traits
 		int experience = e.getExperience();
 		int motivation = e.getMotivation();
-		
-		// determining baseline performance indicators based on traits
-		if (experience > 75) {
-			ahtTarget -= 20;
-			acwTarget -= 20;
-			fcrTarget -= 5;
-			numCallsTarget += 10;
-			custSatTarget += .5;
-			callQualityTarget += 10;
-		} else if (experience > 50) {
-			ahtTarget -= 10;
-			acwTarget -= 10;
-			fcrTarget -= 2.5;
-			numCallsTarget += 5;
-			custSatTarget += .25;
-			callQualityTarget += 5;
-		} else if (experience > 25) {
-			ahtTarget -= 10;
-			acwTarget -= 10;
-			fcrTarget -= 0;
-			numCallsTarget += 0;
-			custSatTarget += 0;
-			callQualityTarget += 0;
+		int skillLevel = 0;
+
+		// Classifying agents initial performance indicator averages
+		// these values are based off of an interview with Operations Manager of
+		// Eir's Tech Support Department
+		if (experience > 80) {
+			ahtTarget = 560;
+			acwTarget = 45;
+			fcrTarget = 80;
+			numCallsTarget = 34;
+			custSatTarget = 9;
+			callQualityTarget = 90;
+			
+			skillLevel = 5;
+		} else if (experience > 60) {
+			ahtTarget = 620;
+			acwTarget = 55;
+			fcrTarget = 75;
+			numCallsTarget = 30;
+			custSatTarget = 8;
+			callQualityTarget = 80;
+			
+			skillLevel = 4;
+		} else if (experience > 40) {
+			ahtTarget = 680;
+			acwTarget = 60;
+			fcrTarget = 70;
+			numCallsTarget = 25;
+			custSatTarget = 7;
+			callQualityTarget = 70;
+			
+			skillLevel = 3;
+		} else if (experience > 20) {
+			ahtTarget = 720;
+			acwTarget = 75;
+			fcrTarget = 6;
+			numCallsTarget = 20;
+			custSatTarget = 6;
+			callQualityTarget = 60;
+			
+			skillLevel = 2;
 		} else {
-			ahtTarget += 10;
-			acwTarget += 10;
-			fcrTarget += 2.5;
-			numCallsTarget -= 5;
-			custSatTarget += .25;
-			callQualityTarget -= 5;
+			ahtTarget = 800;
+			acwTarget = 90;
+			fcrTarget = 50;
+			numCallsTarget = 18;
+			custSatTarget = 5;
+			callQualityTarget = 50;
+			
+			skillLevel = 1;
 		}
-		
-		/*  Adjusting targets and ranges based on traits
-		 * 	Intelligence
-		 * 	- targets: aht, fcr
-		 * 	- ranges: ALL (smarter -> more consistent)
-		 * 	
-		 * 	Empathy 
-		 * 	- targets: custSat, callQuality
-		 * 	- ranges: custSat, callQuality
-		 *  
-		 *  Motivation
-		 *  - targets: aht, acw, fcr, custSat, callQuality, numCalls
-		 *  - ranges: none
-		 *  
-		 *  Patience
-		 *  - targets: !aht, fcr, custSat, callQuality
-		 *  - range: none
-		 *  
-		 *  Combined effects
-		 *  High Intelligence & Low Patience = Reduced Motivation
+
+		/*
+		 * Survey Monkey Domain Research Description: In order to determine
+		 * roughly how much of an impact each skill had on performance, I
+		 * created a survey and sent it around to a number of technical support
+		 * agents and recruiting agents. The aggregate of their opinions on the
+		 * importance of each skill will be used to simulate daily performance
+		 * reports.
+		 * 
+		 * 
+		 * 1. Skills = Weighted Importance (0..1) 
+		 * - Patience = 0.83 
+		 * - Empathy = 0.83 
+		 * - Intelligence = 0.75 
+		 * - Motivation = 0.585 
+		 * - Initiative = 0.165
+		 * - Communication = 0.83
+		 */
+
+		double patienceWeight = 0.83, empathyWeight = 0.83, intelligenceWeight = 0.75, motivationWeight = 0.585,
+				initiativeWeight = 0.165, communicationWeight = 0.83;
+
+		/*
+		 * Formula to implement trait impact on performance
+		 * 
+		 * impactedTarget = target +/- (skillWeight * target/10 * impact * -skillLevel)
+		 * 
+		 * * aht, acw, fcr use negative impact as lower is better for these indicators whereas with
+		 * 		numCalls, callQuality and custSat, higher is better
+		 * 
+		 * skillLevel = ( e.getSkill() - 50 ) / 100 
+		 * - makes a value +/- .5 max
+		 * 
+		 *
+		 *
+		 * 2. Impact of skill on performance metrics = %
+		 * 
+		 * A. Patience 
+		 * - Average Handle Time = 66.67 
+		 * - After Call Work Time = 16.67 
+		 * - Customer Satisfaction = 66.67 
+		 * - Call Quality Rating = 33.33 
+		 * - First Call Resolution = 66.67 
+		 * - Number of Calls = 16.67
 		 */
 		
+		double patienceImpactAht = 0.6667, patienceImpactAcw = 0.1667, patienceImpactCustSat = 0.6667,
+				patienceImpactCallQuality = 0.3333, patienceImpactFcr = 0.3333, patienceImpactNumCalls = 0.1667;
+
+		ahtTarget = (int) (ahtTarget - (patienceWeight * ahtTarget / 10 * patienceImpactAht * (patience - 50) / 100));
 		
-		// Adjusting aht, fcr targets based on intelligence
-		ahtTarget = (int)(ahtTarget + ( (intelligence - 50) * 0.2) );
-		fcrTarget = (int)(fcrTarget + ( (intelligence - 50) * 0.2 ) );
+		acwTarget = (int) (acwTarget - (patienceWeight * acwTarget / 10 * patienceImpactAcw * (patience - 50) / 100));
 		
-		// adjusting std or range based on intelligence
-		ahtStd = (int)(ahtStd + ( (intelligence - 50) * 0.2) );
-		fcrStd = (int)(fcrStd + ( (intelligence - 50) * 0.2) );
-		acwStd = (int)(acwStd + ( (intelligence - 50) * 0.2) );
+		custSatTarget = (int) (custSatTarget
+				+ (patienceWeight * custSatTarget / 10 * patienceImpactCustSat * (patience - 50) / 100));
+		
+		callQualityTarget = (int) (callQualityTarget
+				+ (patienceWeight * callQualityTarget / 10 * patienceImpactCallQuality * (patience - 50) / 100));
+		
+		fcrTarget = (int) (fcrTarget - (patienceWeight * fcrTarget / 10 * patienceImpactFcr * (patience - 50) / 100));
+		
+		numCallsTarget = (int) (numCallsTarget
+				+ (patienceWeight * numCallsTarget / 10 * patienceImpactNumCalls * (patience - 50) / 100));
 		
 		
 		
+		/* B. Empathy 						** no impact on AHT, ACW **
+		 * - Customer Satisfaction = 100 
+		 * - Call Quality = 66.67 
+		 * - First Call Resolution = 33.33 
+		 * - Number of Calls = 16.67
+		 */
+		
+		double empathyImpactCustSat = 1.00, empathyImpactCallQuality = 0.6667, empathyImpactFcr = 0.3333,
+				empathyImpactNumCalls = 0.1667;
+
+		custSatTarget = (int) (custSatTarget
+				+ (empathyWeight * custSatTarget / 10 * empathyImpactCustSat * (empathy - 50) / 100));
+		
+		callQualityTarget = (int) (callQualityTarget
+				+ (empathyWeight * callQualityTarget / 10 * empathyImpactCallQuality * (empathy - 50) / 100));
+		
+		fcrTarget = (int) (fcrTarget - (empathyWeight * fcrTarget / 10 * empathyImpactFcr * (empathy - 50) / 100));
+		
+		numCallsTarget = (int) (numCallsTarget
+				+ (empathyWeight * numCallsTarget / 10 * empathyImpactNumCalls * (empathy - 50) / 100));
+		
+		
+		
+		/* C. Intelligence 
+		 * - Average Handle Time = 83.33 
+		 * - After Call Work = 33.33 
+		 * - Customer Satisfaction = 50 
+		 * - Call Quality = 66.67 
+		 * - First Call Resolution = 83.33 
+		 * - Number of Calls = 33.33
+		 */ 
+		
+		double intelligenceImpactAht = 0.8333, intelligenceImpactAcw = 0.3333, intelligenceImpactCustSat = 0.50,
+				intelligenceImpactCallQuality = 0.6667, intelligenceImpactFcr = 0.8333,
+				intelligenceImpactNumCalls = 0.3333;
+
+		ahtTarget = (int) (ahtTarget
+				- (intelligenceWeight * ahtTarget / 10 * intelligenceImpactAht * (intelligence - 50) / 100));
+
+		acwTarget = (int) (acwTarget
+				- (intelligenceWeight * acwTarget / 10 * intelligenceImpactAcw * (intelligence - 50) / 100));
+
+		custSatTarget = (int) (custSatTarget
+				+ (intelligenceWeight * custSatTarget / 10 * intelligenceImpactCustSat * (intelligence - 50) / 100));
+
+		callQualityTarget = (int) (callQualityTarget + (intelligenceWeight * callQualityTarget / 10
+				* intelligenceImpactCallQuality * (intelligence - 50) / 100));
+
+		fcrTarget = (int) (fcrTarget
+				- (intelligenceWeight * fcrTarget / 10 * intelligenceImpactFcr * (intelligence - 50) / 100));
+
+		numCallsTarget = (int) (numCallsTarget
+				+ (intelligenceWeight * numCallsTarget / 10 * intelligenceImpactNumCalls * (intelligence - 50) / 100));
+		
+		
+		
+		/* D. Motivation 
+		 * - Average Handle Time = 50 
+		 * - After Call Work = 83.33 
+		 * - Customer Satisfaction = 66.67 
+		 * - Call Quality = 66.67 
+		 * - First Call Resolution = 16.67 
+		 * - Number of Calls = 83.33
+		 */
+		
+		double motivationImpactAht = 0.50, motivationImpactAcw = 0.8333, motivationImpactCustSat = 0.6667,
+				motivationImpactCallQuality = 0.6667, motivationImpactFcr = 0.1667, motivationImpactNumCalls = 0.8333;
+
+		ahtTarget = (int) (ahtTarget
+				- (motivationWeight * ahtTarget / 10 * motivationImpactAht * (motivation - 50) / 100));
+
+		acwTarget = (int) (acwTarget
+				- (motivationWeight * acwTarget / 10 * motivationImpactAcw * (motivation - 50) / 100));
+
+		custSatTarget = (int) (custSatTarget
+				+ (motivationWeight * custSatTarget / 10 * motivationImpactCustSat * (motivation - 50) / 100));
+
+		callQualityTarget = (int) (callQualityTarget
+				+ (motivationWeight * callQualityTarget / 10 * motivationImpactCallQuality * (motivation - 50) / 100));
+
+		fcrTarget = (int) (fcrTarget
+				- (motivationWeight * fcrTarget / 10 * motivationImpactFcr * (motivation - 50) / 100));
+
+		numCallsTarget = (int) (numCallsTarget
+				+ (motivationWeight * numCallsTarget / 10 * motivationImpactNumCalls * (motivation - 50) / 100));
+		
+		
+		
+		/* E. Initiative 
+		 * - Average Handle Time = 50 
+		 * - After Call Work = 50 
+		 * - Customer Satisfaction = 16.67 
+		 * - Call Quality = 0 
+		 * - First Call Resolution = 100 
+		 * - Number of Calls = 50
+		 */
+		
+		double initiativeImpactAht = 0.5, initiativeImpactAcw = 0.5, initiativeImpactCustSat = 0.1667,
+				initiativeImpactCallQuality = 0, initiativeImpactFcr = 0.1, initiativeImpactNumCalls = 0.5;
+
+		ahtTarget = (int) (ahtTarget
+				- (initiativeWeight * ahtTarget / 10 * initiativeImpactAht * (initiative - 50) / 100));
+
+		acwTarget = (int) (acwTarget
+				- (initiativeWeight * acwTarget / 10 * initiativeImpactAcw * (initiative - 50) / 100));
+
+		custSatTarget = (int) (custSatTarget
+				+ (initiativeWeight * custSatTarget / 10 * initiativeImpactCustSat * (initiative - 50) / 100));
+
+		callQualityTarget = (int) (callQualityTarget
+				+ (initiativeWeight * callQualityTarget / 10 * initiativeImpactCallQuality * (initiative - 50) / 100));
+
+		fcrTarget = (int) (fcrTarget
+				- (initiativeWeight * fcrTarget / 10 * initiativeImpactFcr * (initiative - 50) / 100));
+
+		numCallsTarget = (int) (numCallsTarget
+				+ (initiativeWeight * numCallsTarget / 10 * initiativeImpactNumCalls * (initiative - 50) / 100));
+		
+		/* F. Communication 
+		 * - Average Handle Time = 83.33 
+		 * - After Call Work = 0
+		 * - Customer Satisfaction = 100 
+		 * - Call Quality = 83.33 
+		 * - First Call Resolution = 33.33 
+		 * - Number of Calls = 50
+		 * 
+		 * 
+		 */
+		
+		double communicationImpactAht = 0.8333, communicationImpactAcw = 0, communicationImpactCustSat = 0.1,
+				communicationImpactCallQuality = 0.8333, communicationImpactFcr = 0.3333,
+				communicationImpactNumCalls = 0.5;
+
+		ahtTarget = (int) (ahtTarget
+				- (communicationWeight * ahtTarget / 10 * communicationImpactAht * (communication - 50) / 100));
+
+		acwTarget = (int) (acwTarget
+				- (communicationWeight * acwTarget / 10 * communicationImpactAcw * (communication - 50) / 100));
+
+		custSatTarget = (int) (custSatTarget
+				+ (communicationWeight * custSatTarget / 10 * communicationImpactCustSat * (communication - 50) / 100));
+
+		callQualityTarget = (int) (callQualityTarget + (communicationWeight * callQualityTarget / 10
+				* communicationImpactCallQuality * (communication - 50) / 100));
+
+		fcrTarget = (int) (fcrTarget
+				- (communicationWeight * fcrTarget / 10 * communicationImpactFcr * (communication - 50) / 100));
+
+		numCallsTarget = (int) (numCallsTarget + (communicationWeight * numCallsTarget / 10
+				* communicationImpactNumCalls * (communication - 50) / 100));
+		
+		
+		/* Implement capping of values
+		 * Call Quality range 			(0-100)
+		 * Customer Satisfaction range	(0-10)
+		 * 
+		 */
+		int finalAht, finalAcw, finalFcr, finalCustSat, finalCallQuality, finalNumCalls;
+		boolean resultsValid = false;
+		
+		do {
+			finalAht = (int) Math.round((r.nextGaussian() * ahtStd + ahtTarget));
+			finalAcw = (int) Math.round((r.nextGaussian() * acwStd + acwTarget));
+			finalFcr = (int) Math.round((r.nextGaussian() * fcrStd + fcrTarget));
+			finalCustSat = (int) Math.round((r.nextGaussian() * custSatStd + custSatTarget));
+			finalCallQuality = (int) Math.round((r.nextGaussian() * callQualityStd + callQualityTarget));
+			finalNumCalls = (int) Math.round((r.nextGaussian() * numCallsStd + numCallsTarget));
+			
+			if (finalAht > 0 && finalAcw > 0 && finalFcr > 0 && finalCustSat > 0 && finalCustSat <= 10
+					&& finalCallQuality < 100 && finalCallQuality > 0 && finalNumCalls > 0)
+				resultsValid = true;
+		}while(!resultsValid);
 		
 		// generating avgHandleTime
-		dr.setAht((int) Math.round((r.nextGaussian() + ahtTarget * ahtStd)));
-		dr.setAcw((int) Math.round((r.nextGaussian() + acwTarget * acwStd)));
-		dr.setFcr((int) Math.round((r.nextGaussian() + fcrTarget * fcrStd)));
-		dr.setCustSat((int) Math.round((r.nextGaussian() + custSatTarget * custSatStd)));
-		dr.setCallQuality((int) Math.round((r.nextGaussian() + callQualityTarget * callQualityStd)));
-		dr.setNumCalls((int) Math.round((r.nextGaussian() + numCallsTarget * numCallsStd)));
+		dr.setAht(finalAht);
+		dr.setAcw(finalAcw);
+		dr.setFcr(finalFcr);
+		dr.setCustSat(finalCustSat);
+		dr.setCallQuality(finalCallQuality);
+		dr.setNumCalls(finalNumCalls);
+		dr.setSkillLevel(skillLevel);
+		
 
 		return dr;
 	}
@@ -223,4 +438,64 @@ public class ReportGenerator {
 
 		return date;
 	}
+	
+	public int getDuration() {
+		return duration;
+	}
+
+	public DailyReportDAO getReportDao() {
+		return reportDao;
+	}
+
+	public void setReportDao(DailyReportDAO reportDao) {
+		this.reportDao = reportDao;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
 }
+
+
+
+
+/*
+
+Sample code for conversion from arraylist to .arff file for WEKA mining
+
+ArrayList<Attribute> atts = new ArrayList<Attribute>();
+List<Instance> instances = new ArrayList<Instance>();
+for(int dim = 0; dim < numDimensions; dim++)
+{
+    Attribute current = new Attribute("Attribute" + dim, dim);
+    if(dim == 0)
+    {
+        for(int obj = 0; obj < numInstances; obj++)
+        {
+            instances.add(new SparseInstance(numDimensions));
+        }
+    }
+
+    for(int obj = 0; obj < numInstances; obj++)
+    {
+        instances.get(obj).setValue(current, data[dim][obj]);
+    }
+
+    atts.add(current);
+}
+
+Instances newDataset = new Instances("Dataset", atts, instances.size());
+
+for(Instance inst : instances)
+    newDataset.add(inst);
+ 
+ 
+ 
+ 
+ 
+*/

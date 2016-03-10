@@ -48,6 +48,8 @@ public class EmployeesDAO {
 				employee.setEmpathy(rs.getInt("empathy"));
 				employee.setExperience(rs.getInt("experience"));
 				employee.setMotivation(rs.getInt("motivation"));
+				employee.setInitiative(rs.getInt("initiative"));
+				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}
@@ -60,8 +62,8 @@ public class EmployeesDAO {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(employee);
 
 		return jdbc.update("update employees set firstName = :firstName, surname = :surname, "
-				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, "
-				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience "
+				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, initiative = :initiative,"
+				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience, communication = :communication "
 				+ "where employeeId = :employeeId", params) == 1;
 	}
 
@@ -77,8 +79,8 @@ public class EmployeesDAO {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(employees.toArray());
 
 		return jdbc.batchUpdate("update employees set firstName = :firstName, surname = :surname, "
-				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, "
-				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience "
+				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, initiative = :initiative,"
+				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience, communication = :communication "
 				+ "where employeeId = :employeeId", batchParams);
 	}
 
@@ -87,10 +89,10 @@ public class EmployeesDAO {
 		
 		try {
 			return jdbc.update(
-					"insert into employees (firstName, surname, startDate, departmentId, intelligence, "
-					+ "patience, motivation, empathy, experience) "
-					+ "values (:firstName, :surname, :startDate, :departmentId, :intelligence, "
-					+ ":patience, :motivation, :empathy, :experience)",params) == 1;
+					"insert into employees (firstName, surname, startDate, departmentId, intelligence, initiative, "
+					+ "patience, motivation, empathy, experience, communication) "
+					+ "values (:firstName, :surname, :startDate, :departmentId, :intelligence, :initiative, "
+					+ ":patience, :motivation, :empathy, :experience, :communication)",params) == 1;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
@@ -102,8 +104,8 @@ public class EmployeesDAO {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(employees.toArray());
 
 		return jdbc.batchUpdate(
-				"insert into employees (firstName, surname, startDate, departmentId, intelligence, "
-				+ "patience, motivation, empathy, experience) "
+				"insert into employees (firstName, surname, startDate, departmentId, intelligence, initiative, "
+				+ "patience, motivation, empathy, experience, communication) "
 				+ "values (:firstName, :surname, :startDate, :departmentId, :intelligence, :patience, "
 				+ ":motivation, :empathy, :experience)",batchParams);
 	}
@@ -132,6 +134,11 @@ public class EmployeesDAO {
 				employee.setStartDate(rs.getString("startDate"));
 				employee.setPatience(rs.getInt("patience"));
 				employee.setIntelligence(rs.getInt("intelligence"));
+				employee.setEmpathy(rs.getInt("empathy"));
+				employee.setExperience(rs.getInt("experience"));
+				employee.setMotivation(rs.getInt("motivation"));
+				employee.setInitiative(rs.getInt("initiative"));
+				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}
@@ -158,6 +165,8 @@ public class EmployeesDAO {
 				employee.setEmpathy(rs.getInt("empathy"));
 				employee.setExperience(rs.getInt("experience"));
 				employee.setMotivation(rs.getInt("motivation"));
+				employee.setInitiative(rs.getInt("initiative"));
+				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}

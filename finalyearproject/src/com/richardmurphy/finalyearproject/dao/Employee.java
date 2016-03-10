@@ -28,7 +28,7 @@ public class Employee {
 	// Simulation input metrics
 	@Max(value=100, message="Value must be between 0-100")
 	@Min(value=0, message="Value must be between 0-100")
-	private int intelligence, patience, experience, motivation, empathy;
+	private int intelligence, patience, experience, motivation, empathy, initiative, communication;
 
 	// Constructors
 	public Employee() {
@@ -81,6 +81,30 @@ public class Employee {
 
 	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public int getInitiative() {
+		return initiative;
+	}
+
+	public void setInitiative(int initiative) {
+		this.initiative = initiative;
+	}
+
+	public int getCommunication() {
+		return communication;
+	}
+
+	public void setCommunication(int communication) {
+		this.communication = communication;
 	}
 
 	public int getIntelligence() {
