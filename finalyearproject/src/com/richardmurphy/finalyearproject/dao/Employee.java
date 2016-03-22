@@ -128,7 +128,10 @@ public class Employee {
 	}
 
 	public void setExperience(int experience) {
-		this.experience = experience;
+		if (experience > 100)
+			this.experience = 100;
+		else 
+			this.experience = experience;
 	}
 
 	public int getMotivation() {
@@ -136,7 +139,10 @@ public class Employee {
 	}
 
 	public void setMotivation(int motivation) {
-		this.motivation = motivation;
+		if (motivation > 0)
+			this.motivation = motivation;
+		else
+			this.motivation = 0;
 	}
 
 	public int getEmpathy() {

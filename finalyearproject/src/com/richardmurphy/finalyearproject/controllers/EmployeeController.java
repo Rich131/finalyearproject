@@ -30,12 +30,12 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping("/employees")
-	public String showEmployees(Model model) {		
+	public String showEmployees(Model model, @Valid Employee employee) {		
 		List<Employee> employees = employeeService.getEmployees();
 		
 		model.addAttribute("employees", employees);
 		
-		return "employees/employees";
+		return "employees";
 	}
 	
 	@RequestMapping(value="/employees/create", method=RequestMethod.GET)
@@ -43,7 +43,7 @@ public class EmployeeController {
 		
 		model.addAttribute("employee", new Employee());
 		
-		return "employees/create";
+		return "employees";
 	}
 	
 	@RequestMapping(value="/employees/create", method=RequestMethod.POST)
@@ -59,13 +59,13 @@ public class EmployeeController {
 				System.out.println(error.getDefaultMessage());
 			}
 			
-			return "employees/create";
+			return "redirect:/employees";
 		} else {
 			System.out.println("Validated.");
 			
 			employeeService.create(employee);
 			
-			return "employees/create";
+			return "redirect:/employees";
 		}
 	}
 	

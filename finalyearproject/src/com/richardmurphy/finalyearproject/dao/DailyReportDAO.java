@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +61,7 @@ public class DailyReportDAO {
 
 		MapSqlParameterSource params = new MapSqlParameterSource("simId", simId);
 
-		return jdbc.query("select * from dailyReport order by employeeId, dateLogged where simId = :simId", params,
+		return jdbc.query("select * from dailyReport where simId = :simId order by employeeId, dateLogged", params,
 				new RowMapper<DailyReport>() {
 
 					@Override
@@ -112,13 +114,18 @@ public class DailyReportDAO {
 				batchParams);
 	}
 
-	public boolean create(DailyReport report) {
+	// creates a new report
+	public int create(DailyReport report) {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(report);
-
-		return jdbc.update(
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		
+		jdbc.update(
 				"insert into dailyReport (employeeId, simId, aht, acw, fcr, custSat, callQuality, numCalls, dateLogged, skillLevel) "
 						+ "values (:employeeId, :simId, :aht, :acw, :fcr, :custSat, :callQuality, :numCalls, :date, :skillLevel)",
-				params) == 1;
+				params, keyHolder, new String[]{"employeeId"});
+		
+		// casting key from number to int on return 
+		return (int)keyHolder.getKey();
 	}
 
 	@Transactional

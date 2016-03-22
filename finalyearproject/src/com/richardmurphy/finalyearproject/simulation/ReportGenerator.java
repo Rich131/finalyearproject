@@ -3,6 +3,7 @@ package com.richardmurphy.finalyearproject.simulation;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,24 +15,25 @@ import org.joda.time.LocalDate;
 import com.richardmurphy.finalyearproject.dao.DailyReport;
 import com.richardmurphy.finalyearproject.dao.DailyReportDAO;
 import com.richardmurphy.finalyearproject.dao.Employee;
+import com.richardmurphy.finalyearproject.dao.SimEmployee;
 import com.richardmurphy.finalyearproject.dao.SummaryReport;
 import com.richardmurphy.finalyearproject.dao.SummaryReportDAO;
 
 public class ReportGenerator {
 
 	private List<DailyReport> reports;
-	private DailyReportDAO reportDao;
-	private SummaryReport summaryReport;
-	private SummaryReportDAO summaryReportDao;
 
+	private List<SimEmployee> simEmployees;
+
+	private SummaryReport summaryReport;
+
+	private String simName;
 	private Date startDate;
 
-	@Max(value = 366)
+	@Max(value = 1000)
 	private int duration;
 
 	public ReportGenerator() {
-		reportDao = new DailyReportDAO();
-		summaryReportDao = new SummaryReportDAO();
 	}
 
 	public List<DailyReport> getReports() {
@@ -42,25 +44,49 @@ public class ReportGenerator {
 		this.duration = duration;
 	}
 
+	public List<SimEmployee> getSimEmployees() {
+		return simEmployees;
+	}
+
+	public void setSimEmployees(List<SimEmployee> simEmployees) {
+		this.simEmployees = simEmployees;
+	}
+
 	/*
 	 * This method is the main loop that creates daily reports based on
 	 * employees' traits
 	 * 
 	 */
-	public List<DailyReport> generateReports(List<Employee> employees) {
+	public List<DailyReport> generateReports() {
 
 		ArrayList<DailyReport> listOfReports = new ArrayList<DailyReport>();
 
 		int numDays = duration;
 		Date date = startDate;
-		
+
+		// setting the start date for each SimEmployee
+		for (SimEmployee e : simEmployees)
+			e.setStartDate(date);
 
 		for (int i = 0; i <= numDays; i++) {
 
-			for (Employee e : employees) {
+			// for each employee, if motivation is low, chance of quitting
+			// set leaveDate to current and isCurrentEmployee = false
+			for (SimEmployee e : simEmployees) {
 
-				listOfReports.add(generateSingleReport(e, date));
+				if (Math.random() > 0.975 && e.getMotivation() < 5) {
+					e.setLeaveDate(date);
+					e.setIsCurrentEmployee(false);
+				} else if (Math.random() > 0.99 && e.getMotivation() < 10) {
+					e.setLeaveDate(date);
+					e.setIsCurrentEmployee(false);
+				}
 
+				// if currently employed i.e. hasn't quit, then 'do day's work'
+				// - generate report and add to list
+				if (e.getIsCurrentEmployee()) {
+					listOfReports.add(generateSingleReport(e, date));
+				}
 			}
 
 			// converting from Java Date to Joda LocalDate
@@ -73,20 +99,19 @@ public class ReportGenerator {
 			date = localDate.toDateTimeAtStartOfDay().toDate();
 		}
 
-		createSummaryReport(listOfReports);
-
 		return listOfReports;
 
 	}
-	
-	public SummaryReport createSummaryReport(List<DailyReport> dailyReports){
-		// constructor for summary report with list of daily reports calculates aggregate vals from within constructor
+
+	public SummaryReport generateSummaryReport(List<DailyReport> dailyReports) {
+		// constructor for summary report with list of daily reports calculates
+		// aggregate vals from within constructor
 		summaryReport = new SummaryReport(dailyReports);
-		
+
 		return summaryReport;
 	}
-	
-	private DailyReport generateSingleReport(Employee e, Date date) {
+
+	private DailyReport generateSingleReport(SimEmployee e, Date date) {
 
 		DailyReport dr = new DailyReport();
 
@@ -95,7 +120,7 @@ public class ReportGenerator {
 		return dr;
 	}
 
-	private DailyReport simulateDailyReport(DailyReport dr, Employee e, Date date) {
+	private DailyReport simulateDailyReport(DailyReport dr, SimEmployee e, Date date) {
 
 		// setting employeeId on DailyReport
 		dr.setEmployeeId(e.getEmployeeId());
@@ -115,13 +140,20 @@ public class ReportGenerator {
 		int intelligence = e.getIntelligence();
 		int empathy = e.getEmpathy();
 		int patience = e.getPatience();
-		int initiative = e.getInitiative(); 
-		int communication = e.getCommunication(); 
+		int initiative = e.getInitiative();
+		int communication = e.getCommunication();
 
 		// dynamic traits
 		int experience = e.getExperience();
 		int motivation = e.getMotivation();
 		int skillLevel = 0;
+
+		// TODO: Fix --> all agents improve at the same rate
+		e.setExperience(e.getExperience() + 1);
+
+		// TODO: Fix --> randomly demotivate agents
+		if (Math.random() > 0.85)
+			e.setMotivation(e.getMotivation() - 1);
 
 		// Classifying agents initial performance indicator averages
 		// these values are based off of an interview with Operations Manager of
@@ -133,7 +165,7 @@ public class ReportGenerator {
 			numCallsTarget = 34;
 			custSatTarget = 9;
 			callQualityTarget = 90;
-			
+
 			skillLevel = 5;
 		} else if (experience > 60) {
 			ahtTarget = 620;
@@ -142,7 +174,7 @@ public class ReportGenerator {
 			numCallsTarget = 30;
 			custSatTarget = 8;
 			callQualityTarget = 80;
-			
+
 			skillLevel = 4;
 		} else if (experience > 40) {
 			ahtTarget = 680;
@@ -151,16 +183,16 @@ public class ReportGenerator {
 			numCallsTarget = 25;
 			custSatTarget = 7;
 			callQualityTarget = 70;
-			
+
 			skillLevel = 3;
 		} else if (experience > 20) {
 			ahtTarget = 720;
 			acwTarget = 75;
-			fcrTarget = 6;
+			fcrTarget = 60;
 			numCallsTarget = 20;
 			custSatTarget = 6;
 			callQualityTarget = 60;
-			
+
 			skillLevel = 2;
 		} else {
 			ahtTarget = 800;
@@ -169,7 +201,7 @@ public class ReportGenerator {
 			numCallsTarget = 18;
 			custSatTarget = 5;
 			callQualityTarget = 50;
-			
+
 			skillLevel = 1;
 		}
 
@@ -182,12 +214,8 @@ public class ReportGenerator {
 		 * reports.
 		 * 
 		 * 
-		 * 1. Skills = Weighted Importance (0..1) 
-		 * - Patience = 0.83 
-		 * - Empathy = 0.83 
-		 * - Intelligence = 0.75 
-		 * - Motivation = 0.585 
-		 * - Initiative = 0.165
+		 * 1. Skills = Weighted Importance (0..1) - Patience = 0.83 - Empathy =
+		 * 0.83 - Intelligence = 0.75 - Motivation = 0.585 - Initiative = 0.165
 		 * - Communication = 0.83
 		 */
 
@@ -197,79 +225,68 @@ public class ReportGenerator {
 		/*
 		 * Formula to implement trait impact on performance
 		 * 
-		 * impactedTarget = target +/- (skillWeight * target/10 * impact * -skillLevel)
+		 * impactedTarget = target +/- (skillWeight * target/10 * impact *
+		 * -skillLevel)
 		 * 
-		 * * aht, acw, fcr use negative impact as lower is better for these indicators whereas with
-		 * 		numCalls, callQuality and custSat, higher is better
+		 * * aht, acw, fcr use negative impact as lower is better for these
+		 * indicators whereas with numCalls, callQuality and custSat, higher is
+		 * better
 		 * 
-		 * skillLevel = ( e.getSkill() - 50 ) / 100 
-		 * - makes a value +/- .5 max
+		 * skillLevel = ( e.getSkill() - 50 ) / 100 - makes a value +/- .5 max
 		 * 
 		 *
 		 *
 		 * 2. Impact of skill on performance metrics = %
 		 * 
-		 * A. Patience 
-		 * - Average Handle Time = 66.67 
-		 * - After Call Work Time = 16.67 
-		 * - Customer Satisfaction = 66.67 
-		 * - Call Quality Rating = 33.33 
-		 * - First Call Resolution = 66.67 
-		 * - Number of Calls = 16.67
+		 * A. Patience - Average Handle Time = 66.67 - After Call Work Time =
+		 * 16.67 - Customer Satisfaction = 66.67 - Call Quality Rating = 33.33 -
+		 * First Call Resolution = 66.67 - Number of Calls = 16.67
 		 */
-		
+
 		double patienceImpactAht = 0.6667, patienceImpactAcw = 0.1667, patienceImpactCustSat = 0.6667,
 				patienceImpactCallQuality = 0.3333, patienceImpactFcr = 0.3333, patienceImpactNumCalls = 0.1667;
 
 		ahtTarget = (int) (ahtTarget - (patienceWeight * ahtTarget / 10 * patienceImpactAht * (patience - 50) / 100));
-		
+
 		acwTarget = (int) (acwTarget - (patienceWeight * acwTarget / 10 * patienceImpactAcw * (patience - 50) / 100));
-		
+
 		custSatTarget = (int) (custSatTarget
 				+ (patienceWeight * custSatTarget / 10 * patienceImpactCustSat * (patience - 50) / 100));
-		
+
 		callQualityTarget = (int) (callQualityTarget
 				+ (patienceWeight * callQualityTarget / 10 * patienceImpactCallQuality * (patience - 50) / 100));
-		
+
 		fcrTarget = (int) (fcrTarget - (patienceWeight * fcrTarget / 10 * patienceImpactFcr * (patience - 50) / 100));
-		
+
 		numCallsTarget = (int) (numCallsTarget
 				+ (patienceWeight * numCallsTarget / 10 * patienceImpactNumCalls * (patience - 50) / 100));
-		
-		
-		
-		/* B. Empathy 						** no impact on AHT, ACW **
-		 * - Customer Satisfaction = 100 
-		 * - Call Quality = 66.67 
-		 * - First Call Resolution = 33.33 
-		 * - Number of Calls = 16.67
+
+		/*
+		 * B. Empathy ** no impact on AHT, ACW ** - Customer Satisfaction = 100
+		 * - Call Quality = 66.67 - First Call Resolution = 33.33 - Number of
+		 * Calls = 16.67
 		 */
-		
+
 		double empathyImpactCustSat = 1.00, empathyImpactCallQuality = 0.6667, empathyImpactFcr = 0.3333,
 				empathyImpactNumCalls = 0.1667;
 
 		custSatTarget = (int) (custSatTarget
 				+ (empathyWeight * custSatTarget / 10 * empathyImpactCustSat * (empathy - 50) / 100));
-		
+
 		callQualityTarget = (int) (callQualityTarget
 				+ (empathyWeight * callQualityTarget / 10 * empathyImpactCallQuality * (empathy - 50) / 100));
-		
+
 		fcrTarget = (int) (fcrTarget - (empathyWeight * fcrTarget / 10 * empathyImpactFcr * (empathy - 50) / 100));
-		
+
 		numCallsTarget = (int) (numCallsTarget
 				+ (empathyWeight * numCallsTarget / 10 * empathyImpactNumCalls * (empathy - 50) / 100));
-		
-		
-		
-		/* C. Intelligence 
-		 * - Average Handle Time = 83.33 
-		 * - After Call Work = 33.33 
-		 * - Customer Satisfaction = 50 
-		 * - Call Quality = 66.67 
-		 * - First Call Resolution = 83.33 
-		 * - Number of Calls = 33.33
-		 */ 
-		
+
+		/*
+		 * C. Intelligence - Average Handle Time = 83.33 - After Call Work =
+		 * 33.33 - Customer Satisfaction = 50 - Call Quality = 66.67 - First
+		 * Call Resolution = 83.33 - Number of Calls = 33.33
+		 */
+
 		double intelligenceImpactAht = 0.8333, intelligenceImpactAcw = 0.3333, intelligenceImpactCustSat = 0.50,
 				intelligenceImpactCallQuality = 0.6667, intelligenceImpactFcr = 0.8333,
 				intelligenceImpactNumCalls = 0.3333;
@@ -291,18 +308,13 @@ public class ReportGenerator {
 
 		numCallsTarget = (int) (numCallsTarget
 				+ (intelligenceWeight * numCallsTarget / 10 * intelligenceImpactNumCalls * (intelligence - 50) / 100));
-		
-		
-		
-		/* D. Motivation 
-		 * - Average Handle Time = 50 
-		 * - After Call Work = 83.33 
-		 * - Customer Satisfaction = 66.67 
-		 * - Call Quality = 66.67 
-		 * - First Call Resolution = 16.67 
-		 * - Number of Calls = 83.33
+
+		/*
+		 * D. Motivation - Average Handle Time = 50 - After Call Work = 83.33 -
+		 * Customer Satisfaction = 66.67 - Call Quality = 66.67 - First Call
+		 * Resolution = 16.67 - Number of Calls = 83.33
 		 */
-		
+
 		double motivationImpactAht = 0.50, motivationImpactAcw = 0.8333, motivationImpactCustSat = 0.6667,
 				motivationImpactCallQuality = 0.6667, motivationImpactFcr = 0.1667, motivationImpactNumCalls = 0.8333;
 
@@ -323,18 +335,13 @@ public class ReportGenerator {
 
 		numCallsTarget = (int) (numCallsTarget
 				+ (motivationWeight * numCallsTarget / 10 * motivationImpactNumCalls * (motivation - 50) / 100));
-		
-		
-		
-		/* E. Initiative 
-		 * - Average Handle Time = 50 
-		 * - After Call Work = 50 
-		 * - Customer Satisfaction = 16.67 
-		 * - Call Quality = 0 
-		 * - First Call Resolution = 100 
-		 * - Number of Calls = 50
+
+		/*
+		 * E. Initiative - Average Handle Time = 50 - After Call Work = 50 -
+		 * Customer Satisfaction = 16.67 - Call Quality = 0 - First Call
+		 * Resolution = 100 - Number of Calls = 50
 		 */
-		
+
 		double initiativeImpactAht = 0.5, initiativeImpactAcw = 0.5, initiativeImpactCustSat = 0.1667,
 				initiativeImpactCallQuality = 0, initiativeImpactFcr = 0.1, initiativeImpactNumCalls = 0.5;
 
@@ -355,18 +362,15 @@ public class ReportGenerator {
 
 		numCallsTarget = (int) (numCallsTarget
 				+ (initiativeWeight * numCallsTarget / 10 * initiativeImpactNumCalls * (initiative - 50) / 100));
-		
-		/* F. Communication 
-		 * - Average Handle Time = 83.33 
-		 * - After Call Work = 0
-		 * - Customer Satisfaction = 100 
-		 * - Call Quality = 83.33 
-		 * - First Call Resolution = 33.33 
-		 * - Number of Calls = 50
+
+		/*
+		 * F. Communication - Average Handle Time = 83.33 - After Call Work = 0
+		 * - Customer Satisfaction = 100 - Call Quality = 83.33 - First Call
+		 * Resolution = 33.33 - Number of Calls = 50
 		 * 
 		 * 
 		 */
-		
+
 		double communicationImpactAht = 0.8333, communicationImpactAcw = 0, communicationImpactCustSat = 0.1,
 				communicationImpactCallQuality = 0.8333, communicationImpactFcr = 0.3333,
 				communicationImpactNumCalls = 0.5;
@@ -388,16 +392,15 @@ public class ReportGenerator {
 
 		numCallsTarget = (int) (numCallsTarget + (communicationWeight * numCallsTarget / 10
 				* communicationImpactNumCalls * (communication - 50) / 100));
-		
-		
-		/* Implement capping of values
-		 * Call Quality range 			(0-100)
-		 * Customer Satisfaction range	(0-10)
+
+		/*
+		 * Implement capping of values Call Quality range (0-100) Customer
+		 * Satisfaction range (0-10)
 		 * 
 		 */
 		int finalAht, finalAcw, finalFcr, finalCustSat, finalCallQuality, finalNumCalls;
 		boolean resultsValid = false;
-		
+
 		do {
 			finalAht = (int) Math.round((r.nextGaussian() * ahtStd + ahtTarget));
 			finalAcw = (int) Math.round((r.nextGaussian() * acwStd + acwTarget));
@@ -405,12 +408,12 @@ public class ReportGenerator {
 			finalCustSat = (int) Math.round((r.nextGaussian() * custSatStd + custSatTarget));
 			finalCallQuality = (int) Math.round((r.nextGaussian() * callQualityStd + callQualityTarget));
 			finalNumCalls = (int) Math.round((r.nextGaussian() * numCallsStd + numCallsTarget));
-			
+
 			if (finalAht > 0 && finalAcw > 0 && finalFcr > 0 && finalCustSat > 0 && finalCustSat <= 10
 					&& finalCallQuality < 100 && finalCallQuality > 0 && finalNumCalls > 0)
 				resultsValid = true;
-		}while(!resultsValid);
-		
+		} while (!resultsValid);
+
 		// generating avgHandleTime
 		dr.setAht(finalAht);
 		dr.setAcw(finalAcw);
@@ -419,7 +422,6 @@ public class ReportGenerator {
 		dr.setCallQuality(finalCallQuality);
 		dr.setNumCalls(finalNumCalls);
 		dr.setSkillLevel(skillLevel);
-		
 
 		return dr;
 	}
@@ -438,17 +440,9 @@ public class ReportGenerator {
 
 		return date;
 	}
-	
+
 	public int getDuration() {
 		return duration;
-	}
-
-	public DailyReportDAO getReportDao() {
-		return reportDao;
-	}
-
-	public void setReportDao(DailyReportDAO reportDao) {
-		this.reportDao = reportDao;
 	}
 
 	public Date getStartDate() {
@@ -459,43 +453,37 @@ public class ReportGenerator {
 		this.startDate = startDate;
 	}
 
+	public String getSimName() {
+		return simName;
+	}
+
+	public void setSimName(String name) {
+		this.simName = name;
+	}
+
 }
-
-
-
 
 /*
-
-Sample code for conversion from arraylist to .arff file for WEKA mining
-
-ArrayList<Attribute> atts = new ArrayList<Attribute>();
-List<Instance> instances = new ArrayList<Instance>();
-for(int dim = 0; dim < numDimensions; dim++)
-{
-    Attribute current = new Attribute("Attribute" + dim, dim);
-    if(dim == 0)
-    {
-        for(int obj = 0; obj < numInstances; obj++)
-        {
-            instances.add(new SparseInstance(numDimensions));
-        }
-    }
-
-    for(int obj = 0; obj < numInstances; obj++)
-    {
-        instances.get(obj).setValue(current, data[dim][obj]);
-    }
-
-    atts.add(current);
-}
-
-Instances newDataset = new Instances("Dataset", atts, instances.size());
-
-for(Instance inst : instances)
-    newDataset.add(inst);
- 
- 
- 
- 
- 
-*/
+ * 
+ * Sample code for conversion from arraylist to .arff file for WEKA mining
+ * 
+ * ArrayList<Attribute> atts = new ArrayList<Attribute>(); List<Instance>
+ * instances = new ArrayList<Instance>(); for(int dim = 0; dim < numDimensions;
+ * dim++) { Attribute current = new Attribute("Attribute" + dim, dim); if(dim ==
+ * 0) { for(int obj = 0; obj < numInstances; obj++) { instances.add(new
+ * SparseInstance(numDimensions)); } }
+ * 
+ * for(int obj = 0; obj < numInstances; obj++) {
+ * instances.get(obj).setValue(current, data[dim][obj]); }
+ * 
+ * atts.add(current); }
+ * 
+ * Instances newDataset = new Instances("Dataset", atts, instances.size());
+ * 
+ * for(Instance inst : instances) newDataset.add(inst);
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

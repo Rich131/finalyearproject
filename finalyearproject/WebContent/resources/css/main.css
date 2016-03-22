@@ -1,5 +1,6 @@
 body {
-	padding-top: 40px;
+	padding-top: 10px;
+	background-color: #D4D4E6;
 }
 
 .error {
@@ -7,11 +8,107 @@ body {
 	color: red;
 }
 
+.no-bullets {
+	list-style-type: none;
+}
+
+.report-table, .emp-table, .sim-emp-details {
+	display: block;
+	height: 350px;
+	width: auto;
+	overflow-y: scroll;
+}
+
 .dashboard {
 	border: 1px solid black;
 	border-radius: 2px;
 }
 
-.dashboard-settings input[type=number]{
-    width: 50px;
-} 
+.dashboard-settings input[type=number] {
+	width: 50px;
+}
+
+#footer {
+	margin-top: 30px;
+	padding-top: 30px;
+	background-color: #09093B;
+	text-size: small;
+}
+
+.slider-range {
+	align: center;
+	margin-top: -15px;
+}
+
+
+.slider-label {
+	max-width: 60%;
+}
+
+.slider-input {
+	max-width: 40%;
+}
+
+.submit-btn {
+	margin-left: 25%;
+	margin-right: 25%;
+}
+
+.submit-btn > button {
+	vertical-align: middle;
+}
+
+.trait-img {
+	max-height: 40px;
+	max-width: 40px;
+}
+
+.sim-emp-details > thead > tr > th, .sim-emp-details > tbody > tr > td {
+	text-align: center;
+}
+
+.sim-emp-details img {
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+    align: middle;
+}
+
+
+/*  Fixed Header Table  */
+
+.header-fixed {
+    width: 100% 
+}
+
+.header-fixed > thead,
+.header-fixed > tbody,
+.header-fixed > thead > tr,
+.header-fixed > tbody > tr,
+.header-fixed > thead > tr > th,
+.header-fixed > tbody > tr > td {
+    display: block;
+}
+
+.header-fixed > tbody > tr:after,
+.header-fixed > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.header-fixed > tbody {
+    overflow-y: auto;
+    height: 280px;
+}
+
+.header-fixed > tbody > tr > td,
+.header-fixed > thead > tr > th {
+    width: 10%;
+    float: left;
+}
+
+.sim-emp-details > thead > tr > th {
+	height: 60px;
+}

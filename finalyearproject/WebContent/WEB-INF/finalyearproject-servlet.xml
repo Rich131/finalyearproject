@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:context="http://www.springframework.org/schema/context"
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
@@ -13,19 +11,27 @@
 	<context:component-scan
 		base-package="com.richardmurphy.finalyearproject.controllers">
 	</context:component-scan>
-	
+
 	<mvc:resources mapping="/resources/**" location="/resources/">
 	</mvc:resources>
-	
+
 	<!-- This makes the controller annotation driven -->
 	<mvc:annotation-driven></mvc:annotation-driven>
 
-	<!-- -->
-	<beans:bean id="jspViewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/views/"></beans:property>
-		<beans:property name="suffix" value=".jsp"></beans:property>
-	</beans:bean>
+	<!-- <beans:bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<beans:property name="prefix" value="/WEB-INF/views/"></beans:property> <beans:property 
+		name="suffix" value=".jsp"></beans:property> </beans:bean> -->
 
-	
+
+	<beans:bean id="tilesViewResolver"
+		class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
+	</beans:bean>
+	<beans:bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<beans:property name="definitions">
+			<beans:list>
+				<beans:value>/WEB-INF/layouts/default.xml</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
 </beans:beans>

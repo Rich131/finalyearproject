@@ -42,14 +42,6 @@ public class EmployeesDAO {
 				employee.setEmployeeId(rs.getInt("employeeId"));
 				employee.setFirstName(rs.getString("firstName"));
 				employee.setSurname(rs.getString("surname"));
-				employee.setStartDate(rs.getString("startDate"));
-				employee.setPatience(rs.getInt("patience"));
-				employee.setIntelligence(rs.getInt("intelligence"));
-				employee.setEmpathy(rs.getInt("empathy"));
-				employee.setExperience(rs.getInt("experience"));
-				employee.setMotivation(rs.getInt("motivation"));
-				employee.setInitiative(rs.getInt("initiative"));
-				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}
@@ -62,9 +54,7 @@ public class EmployeesDAO {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(employee);
 
 		return jdbc.update("update employees set firstName = :firstName, surname = :surname, "
-				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, initiative = :initiative,"
-				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience, communication = :communication "
-				+ "where employeeId = :employeeId", params) == 1;
+				+ "departmentId = :departmentId where employeeId = :employeeId", params) == 1;
 	}
 
 	// Update batch of records
@@ -79,20 +69,15 @@ public class EmployeesDAO {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(employees.toArray());
 
 		return jdbc.batchUpdate("update employees set firstName = :firstName, surname = :surname, "
-				+ "startDate = :startDate, departmentId = :departmentId, intelligence = :intelligence, initiative = :initiative,"
-				+ "patience = :patience, empathy = :empathy, motivation = :motivation, experience = :experience, communication = :communication "
-				+ "where employeeId = :employeeId", batchParams);
+				+ "departmentId = :departmentId where employeeId = :employeeId", batchParams);
 	}
 
 	public boolean create(Employee employee) {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(employee);
-		
+
 		try {
-			return jdbc.update(
-					"insert into employees (firstName, surname, startDate, departmentId, intelligence, initiative, "
-					+ "patience, motivation, empathy, experience, communication) "
-					+ "values (:firstName, :surname, :startDate, :departmentId, :intelligence, :initiative, "
-					+ ":patience, :motivation, :empathy, :experience, :communication)",params) == 1;
+			return jdbc.update("insert into employees (firstName, surname, departmentId) "
+					+ "values (:firstName, :surname, :departmentId)", params) == 1;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
@@ -103,11 +88,8 @@ public class EmployeesDAO {
 	public int[] create(List<Employee> employees) {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(employees.toArray());
 
-		return jdbc.batchUpdate(
-				"insert into employees (firstName, surname, startDate, departmentId, intelligence, initiative, "
-				+ "patience, motivation, empathy, experience, communication) "
-				+ "values (:firstName, :surname, :startDate, :departmentId, :intelligence, :patience, "
-				+ ":motivation, :empathy, :experience)",batchParams);
+		return jdbc.batchUpdate("insert into employees (firstName, surname, departmentId) "
+				+ "values (:firstName, :surname, :departmentId)", batchParams);
 	}
 
 	public boolean delete(int id) {
@@ -131,14 +113,6 @@ public class EmployeesDAO {
 				employee.setEmployeeId(rs.getInt("employeeId"));
 				employee.setFirstName(rs.getString("firstName"));
 				employee.setSurname(rs.getString("surname"));
-				employee.setStartDate(rs.getString("startDate"));
-				employee.setPatience(rs.getInt("patience"));
-				employee.setIntelligence(rs.getInt("intelligence"));
-				employee.setEmpathy(rs.getInt("empathy"));
-				employee.setExperience(rs.getInt("experience"));
-				employee.setMotivation(rs.getInt("motivation"));
-				employee.setInitiative(rs.getInt("initiative"));
-				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}
@@ -148,8 +122,52 @@ public class EmployeesDAO {
 
 	public List<Employee> getUnregisteredEmployees() {
 		// query to select all employee object with no associated user account
-		// TODO: Test this 
-		return jdbc.query("select * from employees e where e.agentId not in (select agentId from users)", new RowMapper<Employee>() {
+		// TODO: Test this
+		return jdbc.query("select * from employees e where e.agentId not in (select agentId from users)",
+				new RowMapper<Employee>() {
+
+					@Override
+					public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Employee employee = new Employee();
+
+						employee.setDepartmentId(rs.getInt("departmentId"));
+						employee.setEmployeeId(rs.getInt("employeeId"));
+						employee.setFirstName(rs.getString("firstName"));
+						employee.setSurname(rs.getString("surname"));
+
+						return employee;
+					}
+
+				});
+	}
+
+	public List<Integer> getEmployeesNotInSim(int simId, int limit) {
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("simId", simId);
+		params.addValue("limit", limit);
+
+		String sql = "SELECT employeeId FROM employees WHERE employeeId NOT IN "
+				+ "(SELECT employeeId FROM simemployees WHERE simId = :simId) LIMIT :limit";
+
+		return jdbc.query(sql, params, new RowMapper<Integer>() {
+
+			@Override
+			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getInt("employeeId");
+			}
+		});
+
+	}
+
+	public List<Employee> getEmployeesNotInSim(int simId) {
+		// TODO Auto-generated method stub
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("simId", simId);
+
+		String sql = "SELECT * FROM employees WHERE employeeId NOT IN "
+				+ "(SELECT employeeId FROM simemployees WHERE simId = :simId)";
+		return jdbc.query(sql, params, new RowMapper<Employee>() {
 
 			@Override
 			public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -159,14 +177,6 @@ public class EmployeesDAO {
 				employee.setEmployeeId(rs.getInt("employeeId"));
 				employee.setFirstName(rs.getString("firstName"));
 				employee.setSurname(rs.getString("surname"));
-				employee.setStartDate(rs.getString("startDate"));
-				employee.setPatience(rs.getInt("patience"));
-				employee.setIntelligence(rs.getInt("intelligence"));
-				employee.setEmpathy(rs.getInt("empathy"));
-				employee.setExperience(rs.getInt("experience"));
-				employee.setMotivation(rs.getInt("motivation"));
-				employee.setInitiative(rs.getInt("initiative"));
-				employee.setCommunication(rs.getInt("communication"));
 
 				return employee;
 			}

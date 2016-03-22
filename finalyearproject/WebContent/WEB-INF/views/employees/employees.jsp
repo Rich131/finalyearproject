@@ -32,7 +32,6 @@
 			<tr>
 				<td><c:out value="${ emp.departmentId }"></c:out></td>
 				<td><c:out value="${ emp.firstName } ${ emp.surname }"></c:out></td>
-				<td><c:out value="${ emp.startDate }"></c:out></td>
 			</tr>
 		</c:forEach>
 	</table>

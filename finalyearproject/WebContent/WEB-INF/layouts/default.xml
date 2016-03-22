@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<definition name="home.base" template="/WEB-INF/templates/default.jsp">
+		<put-attribute name="script" value=""></put-attribute>
+		<put-attribute name="title" value="FYP | Home Page"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/tiles/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/body.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="home" extends="home.base">
+		<put-attribute name="title" value="FYP | Home Page"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/body.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="simulator" extends="home.base">
+		<put-attribute name="script" value="/WEB-INF/tiles/simulatorscripts.jsp"></put-attribute>
+		<put-attribute name="title" value="FYP | Simulator"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/simulator.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="simulator-employees" extends="home.base">
+		<put-attribute name="title" value="FYP | Sim Employees"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/simEmployee.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="employees" extends="home.base">
+		<put-attribute name="title" value="FYP | Employees"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/employees.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="login" extends="home.base">
+		<put-attribute name="title" value="FYP | Login"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/login.jsp"></put-attribute>
+	</definition>
+</tiles-definitions>
