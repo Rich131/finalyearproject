@@ -24,7 +24,8 @@ public class ReportGenerator {
 	private List<DailyReport> reports;
 
 	private List<SimEmployee> simEmployees;
-
+	
+	private boolean skipWeekends;
 	private SummaryReport summaryReport;
 
 	private String simName;
@@ -93,7 +94,7 @@ public class ReportGenerator {
 			LocalDate localDate = new LocalDate(date);
 
 			// incrementing day (skipping weekends)
-			localDate = addDaySkippingWeekend(localDate);
+			localDate = addDaySkippingWeekend(localDate, skipWeekends);
 
 			// converting back
 			date = localDate.toDateTimeAtStartOfDay().toDate();
@@ -427,15 +428,17 @@ public class ReportGenerator {
 	}
 
 	// Method increments days, skipping weekends
-	private LocalDate addDaySkippingWeekend(LocalDate date) {
+	private LocalDate addDaySkippingWeekend(LocalDate date, boolean skipWeekends) {
 		date = date.plusDays(1);
 
 		System.out.println(date.getDayOfWeek());
-
-		// while next day is Sat OR Sun, skip forward another day
-		while (date.getDayOfWeek() == DayOfWeek.SATURDAY.getValue()
-				|| date.getDayOfWeek() == DayOfWeek.SUNDAY.getValue()) {
-			date = date.plusDays(1);
+		
+		if (skipWeekends) {
+			// while next day is Sat OR Sun, skip forward another day
+			while (date.getDayOfWeek() == DayOfWeek.SATURDAY.getValue()
+					|| date.getDayOfWeek() == DayOfWeek.SUNDAY.getValue()) {
+				date = date.plusDays(1);
+			}
 		}
 
 		return date;
@@ -460,6 +463,15 @@ public class ReportGenerator {
 	public void setSimName(String name) {
 		this.simName = name;
 	}
+
+	public boolean isSkipWeekends() {
+		return skipWeekends;
+	}
+
+	public void setSkipWeekends(boolean skipWeekends) {
+		this.skipWeekends = skipWeekends;
+	}
+	
 
 }
 

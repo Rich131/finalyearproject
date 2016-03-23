@@ -98,7 +98,7 @@ public class SummaryReportDAO {
 	public int update(SummaryReport report) {
 		BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(report);
 
-		String sql = "update summaryReport set name = :simName, avgAht = :avgAht, avgAcw = :avgAcw, "
+		String sql = "update summaryReport set avgAht = :avgAht, avgAcw = :avgAcw, "
 				+ "avgCallQuality = :avgCallQuality, avgCustSat = :avgCustSat, avgFcr = :avgFcr,  "
 				+ "avgNumCalls = :avgNumCalls, countVG = :countVG, countG = :countG, countAvg = :countAvg, "
 				+ "countB = :countB, countVB = :countVB " + "where simId = :simId ";

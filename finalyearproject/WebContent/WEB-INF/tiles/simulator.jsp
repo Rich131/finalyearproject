@@ -88,7 +88,7 @@
 				<li class="active"><a data-toggle="tab" href="#employees">Employees</a></li>
 				<li><a data-toggle="tab" href="#simulation-settings">Launch
 						Control</a></li>
-				<li class="disabled"><a data-toggle="tab" href="#overview">Results</a></li>
+				<li class="disabled"><a data-toggle="tab" id="overview-control" href="#overview">Results</a></li>
 				<li class="disabled"><a data-toggle="tab" href="#data">Raw
 						Data</a></li>
 			</ul>
@@ -99,7 +99,7 @@
 
 
 			<!-- Dashboard -->
-			<div class="tab-content">
+			<div class="tab-content" id="main-tabs">
 
 				<!-- Employees Tab -->
 				<div id="employees" class="tab-pane fade in active">
@@ -156,7 +156,7 @@
 
 														<sf:form class="form" method="post"
 															commandName="simEmployee"
-															action="${ pageContext.request.contextPath }/simulator/${ summarySimId }/employees">
+															action="${ pageContext.request.contextPath }/simulator/${ summarySimId }/employees/batch">
 															<tr>
 																<td><c:out value="${ listedEmployee.employeeId }" />
 																	<sf:input hidden="true" type="number" path="employeeId"
@@ -208,28 +208,28 @@
 												<div class="row">
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="intelligence" class="slider-label">Intelligence:</label>
-															<input type="text" name="intelligence" id="intelligence"
-																readonly class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="intelligence-range" class="slider-label">Intelligence:</label>
+															<input type="text" name="intelligence-range"
+																id="intelligence-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="intelligence-slider-range"></div>
 													</div>
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="motivation" class="slider-label">Motivation:</label>
-															<input type="text" name="motivation" id="motivation"
-																readonly class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="motivation-range" class="slider-label">Motivation:</label>
+															<input type="text" name="motivation-range"
+																id="motivation-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="motivation-slider-range"></div>
 													</div>
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="empathy" class="slider-label">Empathy:</label>
-															<input type="text" name="empathy" id="empathy" readonly
-																class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="empathy-range" class="slider-label">Empathy:</label>
+															<input type="text" name="empathy-range"
+																id="empathy-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="empathy-slider-range"></div>
 													</div>
@@ -237,28 +237,28 @@
 												<div class="row">
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="communication" class="slider-label">Communication:</label>
-															<input type="text" name="communication"
-																id="communication" readonly class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="communication-range" class="slider-label">Communication:</label>
+															<input type="text" name="communication-range"
+																id="communication-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="communication-slider-range"></div>
 													</div>
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="initiative" class="slider-label">Initiative:</label>
-															<input type="text" name="initiative" id="initiative"
-																readonly class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="initiative-range" class="slider-label">Initiative:</label>
+															<input type="text" name="initiative-range"
+																id="initiative-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="initiative-slider-range"></div>
 													</div>
 													<div class="col-md-4 col-sm-4">
 														<div class="form-group">
-															<label for="patience" class="slider-label">Patience:</label>
-															<input type="text" name="patience" id="patience" readonly
-																class="slider-input"
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="patience-range" class="slider-label">Patience:</label>
+															<input type="text" name="patience-range"
+																id="patience-range" readonly class="slider-input"
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="patience-slider-range"></div>
 													</div>
@@ -268,9 +268,10 @@
 												<div class="row">
 													<div class="col-md-8">
 														<div class="form-group">
-															<label for="patience">Experience:</label> <input
-																type="text" name="experience" id="experience" readonly
-																style="border: 0; color: #f6931f; font-weight: bold;">
+															<label for="experience-range">Experience:</label> <input
+																type="text" name="experience-range"
+																id="experience-range" readonly
+																style="border: 0; color: #f6931f; font-weight: bold;" />
 														</div>
 														<div class="slider-range" id="experience-slider-range"></div>
 													</div>
@@ -384,12 +385,29 @@
 
 				<div id="simulation-settings" class="tab-pane">
 					<div class="row">
-						<div class="col-md-12">
-
-							<sf:form class="form-inline" method="post" commandName="reportGenerator"
+						<div class="col-md-8 col-md-offset-2">
+							<h5>Simulation settings and control</h5>
+							<sf:form class="form" method="post" commandName="reportGenerator"
 								action="${ pageContext.request.contextPath }/simulator/${ summarySimId }/run">
-								<sf:input class="form-control" path="startDate" name="startDate" type="date"/>
-								<sf:input class="form-control" path="duration" name="duration" type="number" max="1000" min="1"/>
+								<div class="form-group form-inline row">
+									<div class="col-md-8">
+										<label for="startDate" class="form-control">Start Date</label>
+									</div>
+									<div class="col-md-4">
+										<sf:input class="form-control" path="startDate"
+											name="startDate" type="date" />
+									</div>
+								</div>
+								<div class="form-group form-inline row">
+									<div class="col-md-8">
+										<label for="duration" class="form-control">Duration
+											(in days)</label>
+									</div>
+									<div class="col-md-4">
+										<sf:input class="form-control" path="duration" name="duration"
+											type="number" max="1000" min="1" />
+									</div>
+								</div>
 							</sf:form>
 
 						</div>
@@ -411,15 +429,15 @@
 						<div class="panel-body">
 							<div class="row dashboard">
 								<div class="col-md-6">
-									<canvas id="ahtBarChart" width="100" height="100"></canvas>
-									<canvas id="acwBarChart" width="100" height="100"></canvas>
-									<canvas id="callQBarChart" width="100" height="100"></canvas>
-									<canvas id="fcrBarChart" width="100" height="100"></canvas>
-									<canvas id="custSatBarChart" width="100" height="100"></canvas>
-									<canvas id="numCallsBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="ahtBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="acwBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="callQBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="fcrBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="custSatBarChart" width="100" height="100"></canvas>
+									<canvas class="chart" id="numCallsBarChart" width="100" height="100"></canvas>
 								</div>
 								<div class="col-md-3">
-									<canvas id="employeePieChart" width="400" height="400"></canvas>
+									<canvas class="chart" id="employeePieChart" width="400" height="400"></canvas>
 								</div>
 							</div>
 

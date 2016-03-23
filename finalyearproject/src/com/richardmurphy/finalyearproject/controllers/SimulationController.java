@@ -77,23 +77,20 @@ public class SimulationController {
 	// simulation environment correctly
 	@RequestMapping(value = "/simulator/{id}", method = RequestMethod.GET)
 	public String showSimulation(Model model, @PathVariable("id") int simId) {
-		
-		
+
 		SimEmployee simEmpToBeCreated = new SimEmployee();
 		ReportGenerator reportGenerator = new ReportGenerator();
-		
+
 		// gathering lists of employees and reports
 		SummaryReport summaryReport = summaryReportService.getSummaryReport(simId);
 		List<DailyReport> dailyReports = dailyReportService.getDailyReportsBySimId(simId);
 		List<SummaryReport> pastReports = summaryReportService.getSummaryReports();
 		List<Employee> listedEmployees = employeeService.getEmployeesBySimId(simId);
 		List<SimEmployee> simEmployees = simEmployeeService.getSimEmployees(simId);
-		
-		
-		
+
 		// add Report Generator to model
 		model.addAttribute("reportGenerator", reportGenerator);
-		
+
 		// list of all employees in database
 		model.addAttribute("listedEmployees", listedEmployees);
 
@@ -108,7 +105,7 @@ public class SimulationController {
 
 		// raw data - daily reports
 		model.addAttribute("dailyReports", dailyReports);
-		
+
 		// adding empty simEmp for adding individually through spring form
 		model.addAttribute("simEmployee", simEmpToBeCreated);
 
@@ -144,21 +141,15 @@ public class SimulationController {
 	 * 
 	 */
 
-	// TODO: Split functionality into 2 methods, specifying params like:
-	// https://stackoverflow.com/questions/22373696/requestparam-in-spring-mvc-handling-optional-parameters
+	@RequestMapping(value = "/simulator/{id}/employees/batch", method = RequestMethod.POST)
+	public String addSingleEmployeeToSim(Model model, @PathVariable("id") int simId, @Valid SimEmployee simEmp,
+			BindingResult br) {
 
-	@RequestMapping(value = "/simulator/{id}/employees", method = RequestMethod.POST)
-	public String addSingleEmployeeToSim(Model model, @PathVariable("id") int simId,
-			@Valid SimEmployee simEmp, BindingResult br) {
-		
-		
 		simEmp.setSimId(simId);
 		System.out.println(simEmp);
-		
+
 		simEmployeeService.create(simEmp);
-		
-		
-		
+
 		return "redirect:/simulator/" + simId;
 	}
 
@@ -168,14 +159,17 @@ public class SimulationController {
 	 * SimEmployee objects within the range specified.
 	 * 
 	 */
-	@RequestMapping(value = "/simulator/{id}/employees", method = RequestMethod.POST, params = { "intelligence",
-			"motivation", "empathy", "communication", "initiative", "patience", "experience", "submit", "_csrf" })
+	@RequestMapping(value = "/simulator/{id}/employees", method = RequestMethod.POST, params = { "intelligence-range",
+			"motivation-range", "empathy-range", "communication-range", "initiative-range", "patience-range",
+			"experience-range", "submit", "_csrf" })
 	public String addBulkEmployeesToSim(Model model, @PathVariable("id") int simId,
-			@RequestParam("intelligence") String intelligenceRangeStr,
-			@RequestParam("initiative") String initiativeRangeStr, @RequestParam("empathy") String empathyRangeStr,
-			@RequestParam("patience") String patienceRangeStr, @RequestParam("experience") String experienceRangeStr,
-			@RequestParam("communication") String communicationRangeStr,
-			@RequestParam("motivation") String motivationRangeStr, @RequestParam("submit") String submit) {
+			@RequestParam("intelligence-range") String intelligenceRangeStr,
+			@RequestParam("initiative-range") String initiativeRangeStr,
+			@RequestParam("empathy-range") String empathyRangeStr,
+			@RequestParam("patience-range") String patienceRangeStr,
+			@RequestParam("experience-range") String experienceRangeStr,
+			@RequestParam("communication-range") String communicationRangeStr,
+			@RequestParam("motivation-range") String motivationRangeStr, @RequestParam("submit") String submit) {
 
 		int limit = 0;
 
@@ -231,6 +225,9 @@ public class SimulationController {
 						(r.nextInt(maxCommunication - minCommunication) + minCommunication)));
 			}
 
+			for (SimEmployee s : simEmployees)
+				System.out.println(s);
+
 			simEmployeeService.create(simEmployees);
 		}
 
@@ -254,15 +251,12 @@ public class SimulationController {
 
 		// assign list of employees in ReportGenerator class
 		reportGenerator.setSimEmployees(simEmployees);
-		
+
 		// run simulation, generating daily reports for each employee
 		List<DailyReport> reports = reportGenerator.generateReports();
 
 		// create summary report from list of daily reports
 		summaryReport = reportGenerator.generateSummaryReport(reports);
-		
-
-		
 
 		// getting list of all sim environments
 		List<SummaryReport> pastReports = summaryReportService.getSummaryReports();
@@ -276,17 +270,17 @@ public class SimulationController {
 		for (DailyReport report : reports) {
 			report.setSimId(simId);
 		}
-		
+
 		// after simulation completes, get updated list of simEmployees
 		simEmployees = reportGenerator.getSimEmployees();
-		
+
 		// write daily reports to DB
 		dailyReportService.create(reports);
-		
-		// update summary report with aggregate data & SimEmployee records 
+
+		// update summary report with aggregate data & SimEmployee records
 		summaryReportService.update(summaryReport);
 		simEmployeeService.update(simEmployees);
-		
+
 		return "redirect:/simulator/" + simId;
 	}
 

@@ -214,26 +214,30 @@ var pieData = [
                }
            ]
 
-var ahtBar = document.getElementById("ahtBarChart").getContext("2d");
-var ahtChart = new Chart(ahtBar).Bar(ahtBarData);
+$('#overview').on('shown.bs.tab', function (e) {
 
-var acwBar = document.getElementById("acwBarChart").getContext("2d");
-var acwChart = new Chart(acwBar).Bar(acwBarData);
-
-var fcrBar = document.getElementById("fcrBarChart").getContext("2d");
-var fcrChart = new Chart(fcrBar).Bar(fcrBarData);
-
-var callQBar = document.getElementById("callQBarChart").getContext("2d");
-var callQChart = new Chart(callQBar).Bar(callQBarData);
-
-var custSatBar = document.getElementById("custSatBarChart").getContext("2d");
-var custSatChart = new Chart(custSatBar).Bar(custSatBarData);
-
-var numCallsBar = document.getElementById("numCallsBarChart").getContext("2d");
-var numCallsChart = new Chart(numCallsBar).Bar(numCallsBarData);
-
-var ctxPie = document.getElementById("employeePieChart").getContext("2d");
-var dashboardChart = new Chart(ctxPie).Pie(pieData);
+	var ahtBar = document.getElementById("ahtBarChart").getContext("2d");
+	var ahtChart = new Chart(ahtBar).Bar(ahtBarData);
+	
+	var acwBar = document.getElementById("acwBarChart").getContext("2d");
+	var acwChart = new Chart(acwBar).Bar(acwBarData);
+	
+	var fcrBar = document.getElementById("fcrBarChart").getContext("2d");
+	var fcrChart = new Chart(fcrBar).Bar(fcrBarData);
+	
+	var callQBar = document.getElementById("callQBarChart").getContext("2d");
+	var callQChart = new Chart(callQBar).Bar(callQBarData);
+	
+	var custSatBar = document.getElementById("custSatBarChart").getContext("2d");
+	var custSatChart = new Chart(custSatBar).Bar(custSatBarData);
+	
+	var numCallsBar = document.getElementById("numCallsBarChart").getContext("2d");
+	var numCallsChart = new Chart(numCallsBar).Bar(numCallsBarData);
+	
+	var ctxPie = document.getElementById("employeePieChart").getContext("2d");
+	var dashboardChart = new Chart(ctxPie).Pie(pieData);
+	
+});
 
 
 
