@@ -35,4 +35,9 @@ public class SimEmployeeService {
 		return simEmployeesDao.update(simEmployees);
 	}
 
+	public SimEmployee getSimEmployee(int simId, int empId) {
+
+		return simEmployeesDao.getEmployeeBySimIdAndEmpId(simId, empId);
+	}
+
 }

@@ -32,6 +32,7 @@ import com.richardmurphy.finalyearproject.services.DailyReportService;
 import com.richardmurphy.finalyearproject.services.EmployeeService;
 import com.richardmurphy.finalyearproject.services.SimEmployeeService;
 import com.richardmurphy.finalyearproject.services.SummaryReportService;
+import com.richardmurphy.finalyearproject.simulation.AgentReport;
 import com.richardmurphy.finalyearproject.simulation.ReportGenerator;
 
 @Controller
@@ -63,14 +64,14 @@ public class SimulationController {
 	}
 
 	@RequestMapping(value = "/simulator", method = RequestMethod.GET)
-	public String showSimulator(Model model, @Valid SummaryReport summaryReport, @Valid Employee employee) {
+	public String showSimulator(Model model, @Valid SummaryReport summaryReport, @Valid Employee employee, @Valid ReportGenerator reportGenerator) {
 		List<SummaryReport> pastReports = summaryReportService.getSummaryReports();
 
-		model.addAttribute("employee", employee);
-		model.addAttribute("summaryReport", summaryReport);
+		// model.addAttribute("employee", employee);
+		// model.addAttribute("summaryReport", summaryReport);
 		model.addAttribute("pastReports", pastReports);
 
-		return "simulator";
+		return "createsimulator";
 	}
 
 	// Main Simulator get request, contains all attributes required to display
@@ -121,32 +122,19 @@ public class SimulationController {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
 
-	/*
-	 * Post to simulator/{id}/employees - create a list of simEmployees
-	 * 
-	 * @RequestMapping(value = "/simulator/{id}/employees", method =
-	 * RequestMethod.POST) public String runSimulator(Model
-	 * model, @PathVariable("id") int simId, @Valid Employee employee,
-	 * BindingResult result) {
-	 * 
-	 * employeeService.create(employee);
-	 * 
-	 * return "simulator/" + simId + "/employees"; }
-	 */
+
 
 	/*
-	 * Request to POST collection of agents to simulation environment Ranges
-	 * specified are parsed from String to ints, Then agents are created with
-	 * values within range randomly
+	 * POST single employee to simulation environment
+	 * employee is added to the environment with the ID specified in the URI
 	 * 
 	 */
 
-	@RequestMapping(value = "/simulator/{id}/employees/batch", method = RequestMethod.POST)
+	@RequestMapping(value = "/simulator/{id}/employees", method = RequestMethod.POST)
 	public String addSingleEmployeeToSim(Model model, @PathVariable("id") int simId, @Valid SimEmployee simEmp,
 			BindingResult br) {
 
 		simEmp.setSimId(simId);
-		System.out.println(simEmp);
 
 		simEmployeeService.create(simEmp);
 
@@ -159,7 +147,7 @@ public class SimulationController {
 	 * SimEmployee objects within the range specified.
 	 * 
 	 */
-	@RequestMapping(value = "/simulator/{id}/employees", method = RequestMethod.POST, params = { "intelligence-range",
+	@RequestMapping(value = "/simulator/{id}/employees/batch", method = RequestMethod.POST, params = { "intelligence-range",
 			"motivation-range", "empathy-range", "communication-range", "initiative-range", "patience-range",
 			"experience-range", "submit", "_csrf" })
 	public String addBulkEmployeesToSim(Model model, @PathVariable("id") int simId,
@@ -258,9 +246,6 @@ public class SimulationController {
 		// create summary report from list of daily reports
 		summaryReport = reportGenerator.generateSummaryReport(reports);
 
-		// getting list of all sim environments
-		List<SummaryReport> pastReports = summaryReportService.getSummaryReports();
-
 		// create blank summary, get auto assigned simId
 
 		summaryReport.setSimId(simId);
@@ -299,11 +284,28 @@ public class SimulationController {
 			return "simulator";
 		} else {
 
-			// create a blank summary report
+			// create a blank summary report, returning newly generated id (auto increment in DB)
 			int simId = summaryReportService.createEmpty(summaryReport);
 
 			// redirect to newly created simulation environment
 			return "redirect:/simulator/" + simId;
 		}
+	}
+	
+	@RequestMapping(value = "/simulator/{simId}/employee/{empId}/{view}", method = RequestMethod.GET)
+	public String showEmployeeReport(Model model, @PathVariable("simId") int simId, @PathVariable("empId") int empId, @PathVariable("view") int view) {
+		
+		List<DailyReport> dailyReports = dailyReportService.getDailyReportsBySimIdAndEmpId(simId, empId);
+		AgentReport agentReport = new AgentReport(simId, empId, dailyReports);
+		
+		SimEmployee simEmp = simEmployeeService.getSimEmployee(simId, empId);
+		Employee emp = employeeService.getEmployee(empId);
+		
+		model.addAttribute("view", view);
+		model.addAttribute("employee", emp);
+		model.addAttribute("simEmployee", simEmp);
+		model.addAttribute("agentReport", agentReport);
+		
+		return "simulator-employee";
 	}
 }

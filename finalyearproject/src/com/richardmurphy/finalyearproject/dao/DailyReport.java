@@ -1,14 +1,30 @@
 package com.richardmurphy.finalyearproject.dao;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class DailyReport {
 
-	private String date;
+	private Date date;
 	private int employeeId, simId, skillLevel;
 	private int aht, acw, custSat, callQuality, fcr, numCalls;
+	private String dateDayMonth;
 
 	// constructor
 	public DailyReport() {
+		
+	}
+	
+	public void setDateDayMonth() {
+		this.dateDayMonth = new SimpleDateFormat("DD/MM").format(date);
+	}
+	
+	public String getDateDayMonth() {
+		return dateDayMonth;
+	}
 
+	public void setDateDayMonth(String dateDayMonth) {
+		this.dateDayMonth = dateDayMonth;
 	}
 
 	public int getSkillLevel() {
@@ -19,12 +35,13 @@ public class DailyReport {
 		this.skillLevel = skillLevel;
 	}
 
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
+		setDateDayMonth();
 	}
 
 	public int getSimId() {
@@ -90,4 +107,13 @@ public class DailyReport {
 	public void setNumCalls(int numCalls) {
 		this.numCalls = numCalls;
 	}
+
+	@Override
+	public String toString() {
+		return "DailyReport [date=" + date + ", employeeId=" + employeeId + ", simId=" + simId + ", aht=" + aht
+				+ ", acw=" + acw + ", custSat=" + custSat + ", callQuality=" + callQuality + ", fcr=" + fcr
+				+ ", numCalls=" + numCalls + "]\n";
+	}
+	
+	
 }

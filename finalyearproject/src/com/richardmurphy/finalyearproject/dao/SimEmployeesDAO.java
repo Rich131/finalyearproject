@@ -120,9 +120,44 @@ public class SimEmployeesDAO {
 		SqlParameterSource[] batchParams = SqlParameterSourceUtils.createBatch(simEmployees.toArray());
 
 		return jdbc.batchUpdate(
-				"update simemployees set experience = :experience, " + "motivation = :motivation, startDate = :startDate, "
+				"update simemployees set experience = :experience, "
+						+ "motivation = :motivation, startDate = :startDate, "
 						+ "leaveDate = :leaveDate, isCurrentEmployee = :isCurrentEmployee where employeeId = :employeeId",
 				batchParams);
+	}
+
+	public SimEmployee getEmployeeBySimIdAndEmpId(int simId, int empId) {
+		// TODO Auto-generated method stub
+
+		MapSqlParameterSource params = new MapSqlParameterSource("simId", simId);
+		params.addValue("empId", empId);
+
+		String sql = "SELECT * FROM simEmployees WHERE simId = :simId AND employeeId = :empId";
+
+		return jdbc.queryForObject(sql, params, new RowMapper<SimEmployee>() {
+
+			@Override
+			public SimEmployee mapRow(ResultSet rs, int rowNum) throws SQLException {
+				SimEmployee simEmp = new SimEmployee();
+
+				simEmp.setEmployeeId(rs.getInt("employeeId"));
+				simEmp.setLeaveDate(rs.getDate("leaveDate"));
+				simEmp.setSimId(rs.getInt("simId"));
+				simEmp.setStartDate(rs.getDate("startDate"));
+
+				simEmp.setPatience(rs.getInt("patience"));
+				simEmp.setIntelligence(rs.getInt("intelligence"));
+				simEmp.setEmpathy(rs.getInt("empathy"));
+				simEmp.setExperience(rs.getInt("experience"));
+				simEmp.setMotivation(rs.getInt("motivation"));
+				simEmp.setInitiative(rs.getInt("initiative"));
+				simEmp.setCommunication(rs.getInt("communication"));
+				simEmp.setIsCurrentEmployee(rs.getBoolean("isCurrentEmployee"));
+
+				return simEmp;
+			}
+
+		});
 	}
 
 }

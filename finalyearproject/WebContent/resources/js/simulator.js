@@ -2,7 +2,7 @@
  * 	as well as updating the display when parameters are changed
  */
 
-
+Chart.defaults.global.responsive = true;
 
 var barData = {
 		labels: ["AHT", "ACW", "FCR", "Call Quality", "Customer Review", "# Calls"],

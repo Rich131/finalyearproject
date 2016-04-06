@@ -34,4 +34,8 @@ public class DailyReportService {
 		else
 			return false;
 	}
+
+	public List<DailyReport> getDailyReportsBySimIdAndEmpId(int simId, int empId) {
+		return dailyReportDao.getDailyReportsBySimIdAndEmpId(simId, empId);
+	}
 }

@@ -9,28 +9,40 @@
 		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/tiles/body.jsp"></put-attribute>
 	</definition>
-	
+
 	<definition name="home" extends="home.base">
 		<put-attribute name="title" value="FYP | Home Page"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/tiles/body.jsp"></put-attribute>
 	</definition>
-	
+
 	<definition name="simulator" extends="home.base">
-		<put-attribute name="script" value="/WEB-INF/tiles/simulatorscripts.jsp"></put-attribute>
+		<put-attribute name="script"
+			value="/WEB-INF/tiles/simulatorscripts.jsp"></put-attribute>
 		<put-attribute name="title" value="FYP | Simulator"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/tiles/simulator.jsp"></put-attribute>
 	</definition>
-	
-	<definition name="simulator-employees" extends="home.base">
-		<put-attribute name="title" value="FYP | Sim Employees"></put-attribute>
-		<put-attribute name="body" value="/WEB-INF/tiles/simEmployee.jsp"></put-attribute>
+
+	<definition name="createsimulator" extends="home.base">
+		<put-attribute name="title" value="FYP | Simulator"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/createsimulator.jsp"></put-attribute>
 	</definition>
-	
+
+	<definition name="simulator-employee" extends="home.base">
+		<put-attribute name="script" value="/WEB-INF/tiles/employeescript.jsp"></put-attribute>
+		<put-attribute name="title" value="FYP | Sim Employees"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/employee.jsp"></put-attribute>
+	</definition>
+
 	<definition name="employees" extends="home.base">
 		<put-attribute name="title" value="FYP | Employees"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/tiles/employees.jsp"></put-attribute>
 	</definition>
-	
+
+	<definition name="simEmployee" extends="home.base">
+		<put-attribute name="title" value="FYP | Employee Report"></put-attribute>
+		<put-attribute name="body" value="/WEB-INF/tiles/employee.jsp"></put-attribute>
+	</definition>
+
 	<definition name="login" extends="home.base">
 		<put-attribute name="title" value="FYP | Login"></put-attribute>
 		<put-attribute name="body" value="/WEB-INF/tiles/login.jsp"></put-attribute>

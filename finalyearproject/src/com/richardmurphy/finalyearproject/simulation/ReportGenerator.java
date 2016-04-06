@@ -24,7 +24,7 @@ public class ReportGenerator {
 	private List<DailyReport> reports;
 
 	private List<SimEmployee> simEmployees;
-	
+
 	private boolean skipWeekends;
 	private SummaryReport summaryReport;
 
@@ -75,10 +75,10 @@ public class ReportGenerator {
 			// set leaveDate to current and isCurrentEmployee = false
 			for (SimEmployee e : simEmployees) {
 
-				if (Math.random() > 0.975 && e.getMotivation() < 5) {
+				if (e.getMotivation() < 5 && Math.random() > 0.975) {
 					e.setLeaveDate(date);
 					e.setIsCurrentEmployee(false);
-				} else if (Math.random() > 0.99 && e.getMotivation() < 10) {
+				} else if (e.getMotivation() < 10 && Math.random() > 0.99) {
 					e.setLeaveDate(date);
 					e.setIsCurrentEmployee(false);
 				}
@@ -127,8 +127,8 @@ public class ReportGenerator {
 		dr.setEmployeeId(e.getEmployeeId());
 
 		// adding 'current' date to DailyReport object
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		dr.setDate(formatter.format(date));
+		// SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		dr.setDate(date);
 
 		int ahtTarget, acwTarget, numCallsTarget;
 		double fcrTarget, custSatTarget, callQualityTarget;
@@ -149,12 +149,35 @@ public class ReportGenerator {
 		int motivation = e.getMotivation();
 		int skillLevel = 0;
 
-		// TODO: Fix --> all agents improve at the same rate
-		e.setExperience(e.getExperience() + 1);
+		// agents improve based on intelligence
+		if (intelligence > 80) {
+			e.setExperience(e.getExperience() + 1);
+		} else if (intelligence > 60 && Math.random() > 0.2) {
+			e.setExperience(e.getExperience() + 1);
+		} else if (intelligence > 40 && Math.random() > 0.4) {
+			e.setExperience(e.getExperience() + 1);
+		} else if (intelligence > 20 && Math.random() > 0.6) {
+			e.setExperience(e.getExperience() + 1);
+		}
 
-		// TODO: Fix --> randomly demotivate agents
-		if (Math.random() > 0.85)
+		// ~ randomly demotivate agents
+		if (intelligence > 80 && patience < 20 && Math.random() > 0.5) {
 			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 70 && patience < 30 && Math.random() > 0.6) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 60 && patience < 40 && Math.random() > 0.7) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 50 && patience < 20 && Math.random() > 0.6) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 50 && patience < 30 && Math.random() > 0.7) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 50 && patience < 40 && Math.random() > 0.8) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 40 && patience < 50 && Math.random() > 0.85) {
+			e.setMotivation(e.getMotivation() - 1);
+		} else if (intelligence > 30 && patience < 70 && Math.random() > 0.9) {
+			e.setMotivation(e.getMotivation() - 1);
+		}
 
 		// Classifying agents initial performance indicator averages
 		// these values are based off of an interview with Operations Manager of
@@ -226,8 +249,7 @@ public class ReportGenerator {
 		/*
 		 * Formula to implement trait impact on performance
 		 * 
-		 * impactedTarget = target +/- (skillWeight * target/10 * impact *
-		 * -skillLevel)
+		 * impactedTarget = target +/- (skillWeight * target/10 * impact * skillLevel)
 		 * 
 		 * * aht, acw, fcr use negative impact as lower is better for these
 		 * indicators whereas with numCalls, callQuality and custSat, higher is
@@ -415,7 +437,7 @@ public class ReportGenerator {
 				resultsValid = true;
 		} while (!resultsValid);
 
-		// generating avgHandleTime
+		
 		dr.setAht(finalAht);
 		dr.setAcw(finalAcw);
 		dr.setFcr(finalFcr);
@@ -432,7 +454,7 @@ public class ReportGenerator {
 		date = date.plusDays(1);
 
 		System.out.println(date.getDayOfWeek());
-		
+
 		if (skipWeekends) {
 			// while next day is Sat OR Sun, skip forward another day
 			while (date.getDayOfWeek() == DayOfWeek.SATURDAY.getValue()
@@ -471,31 +493,6 @@ public class ReportGenerator {
 	public void setSkipWeekends(boolean skipWeekends) {
 		this.skipWeekends = skipWeekends;
 	}
-	
 
 }
 
-/*
- * 
- * Sample code for conversion from arraylist to .arff file for WEKA mining
- * 
- * ArrayList<Attribute> atts = new ArrayList<Attribute>(); List<Instance>
- * instances = new ArrayList<Instance>(); for(int dim = 0; dim < numDimensions;
- * dim++) { Attribute current = new Attribute("Attribute" + dim, dim); if(dim ==
- * 0) { for(int obj = 0; obj < numInstances; obj++) { instances.add(new
- * SparseInstance(numDimensions)); } }
- * 
- * for(int obj = 0; obj < numInstances; obj++) {
- * instances.get(obj).setValue(current, data[dim][obj]); }
- * 
- * atts.add(current); }
- * 
- * Instances newDataset = new Instances("Dataset", atts, instances.size());
- * 
- * for(Instance inst : instances) newDataset.add(inst);
- * 
- * 
- * 
- * 
- * 
- */

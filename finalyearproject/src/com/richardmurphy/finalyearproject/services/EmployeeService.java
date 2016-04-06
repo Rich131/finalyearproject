@@ -36,4 +36,9 @@ public class EmployeeService {
 	public List<Employee> getEmployeesBySimId(int simId) {
 		return employeesDao.getEmployeesNotInSim(simId);
 	}
+
+	public Employee getEmployee(int empId) {
+		// TODO Auto-generated method stub
+		return employeesDao.getEmployee(empId);
+	}
 }

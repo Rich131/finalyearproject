@@ -65,8 +65,10 @@ public class SummaryReportDAO {
 	public SummaryReport getSummaryReport(int simId) {
 
 		MapSqlParameterSource params = new MapSqlParameterSource("simId", simId);
-
-		return jdbc.queryForObject("select * from summaryReport where simId = :simId", params,
+		String sql = "select * from summaryReport where simId = :simId";
+		
+		
+		return jdbc.queryForObject(sql, params,
 				new RowMapper<SummaryReport>() {
 
 					@Override

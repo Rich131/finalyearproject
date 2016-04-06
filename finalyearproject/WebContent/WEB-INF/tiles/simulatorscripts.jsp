@@ -102,32 +102,11 @@
 		$("#experience-range").val(
 				$("#experience-slider-range").slider("values", 0) + " - "
 						+ $("#experience-slider-range").slider("values", 1));
-		
-		
+
 		// setting bar / pie data based on values in hidden table
 		/** This JavaScript file will control the drawing of elements within the dashboard
-		 * 	as well as updating the display when parameters are changed
+		 * 
 		 */
-
-		var barData = {
-			labels : [ "AHT", "ACW", "FCR", "Call Quality", "Customer Review",
-					"# Calls" ],
-			datasets : [ {
-				label : "My First dataset",
-				fillColor : "rgba(220,220,220,0.5)",
-				strokeColor : "rgba(220,220,220,0.8)",
-				highlightFill : "rgba(220,220,220,0.75)",
-				highlightStroke : "rgba(220,220,220,1)",
-				data : [ 65, 59, 90, 81, 56, 55 ]
-			}, {
-				label : "My Second dataset",
-				fillColor : "rgba(151,187,205,0.5)",
-				strokeColor : "rgba(151,187,205,0.8)",
-				highlightFill : "rgba(151,187,205,0.75)",
-				highlightStroke : "rgba(151,187,205,1)",
-				data : [ 28, 48, 40, 19, 96, 27 ]
-			} ]
-		};
 
 		var countVG = document.getElementById("countVG").innerText
 		var countG = document.getElementById("countG").innerText
@@ -136,12 +115,12 @@
 		var countVB = document.getElementById("countVB").innerText
 
 		// getting values from table
-		var ahtVal = document.getElementById("aht").innerText;
-		var acwVal = document.getElementById("acw").innerText;
-		var fcrVal = document.getElementById("fcr").innerText;
-		var callQVal = document.getElementById("callQ").innerText;
-		var custSatVal = document.getElementById("custSat").innerText;
-		var numCallsVal = document.getElementById("numCalls").innerText;
+		var ahtVal = document.getElementById("avgAht").innerText;
+		var acwVal = document.getElementById("avgAcw").innerText;
+		var fcrVal = document.getElementById("avgFcr").innerText;
+		var callQVal = document.getElementById("avgCallQuality").innerText;
+		var custSatVal = document.getElementById("avgCustSat").innerText;
+		var numCallsVal = document.getElementById("avgNumCalls").innerText;
 
 		var ahtBarData = {
 			labels : [ "AHT" ],
@@ -176,7 +155,7 @@
 				highlightFill : "rgba(220,220,220,0.75)",
 				highlightStroke : "rgba(220,220,220,1)",
 				data : [ fcrVal ]
-			}]
+			} ]
 		}
 
 		var callQBarData = {
@@ -188,7 +167,7 @@
 				highlightFill : "rgba(220,220,220,0.75)",
 				highlightStroke : "rgba(220,220,220,1)",
 				data : [ callQVal ]
-			}]
+			} ]
 		}
 
 		var custSatBarData = {
@@ -200,7 +179,7 @@
 				highlightFill : "rgba(220,220,220,0.75)",
 				highlightStroke : "rgba(220,220,220,1)",
 				data : [ custSatVal ]
-			}]
+			} ]
 		}
 
 		var numCallsBarData = {
@@ -212,7 +191,7 @@
 				highlightFill : "rgba(220,220,220,0.75)",
 				highlightStroke : "rgba(220,220,220,1)",
 				data : [ numCallsVal ]
-			}]
+			} ]
 		}
 
 		var pieData = [ {
@@ -241,17 +220,18 @@
 			highlight : "#FF4528",
 			label : "Very Bad"
 		} ]
-		
-		
+
 		var ahtChart, acwChart, fcrChart, callQChart, custSatChart, numCallsChart, dashboardChart;
+	
 		
-		$('a[data-toggle="tab"]')
-				.on('shown.bs.tab', function(e) {
-						
+		$('a[data-toggle="tab"]').on(
+				'shown.bs.tab',
+				function(e) {
+
 					// alert(this.id);
-					
-					if ((this.id) == 'overview-control' ) {	
-						
+
+					if ((this.id) == 'overview-control') {
+
 						var ahtBar = document.getElementById("ahtBarChart")
 								.getContext("2d");
 						var ahtChart = new Chart(ahtBar).Bar(ahtBarData);
@@ -287,12 +267,6 @@
 					}
 
 				});
-		
-		
-		// testing new loading code
 
-		
 	});
-
-	
 </script>

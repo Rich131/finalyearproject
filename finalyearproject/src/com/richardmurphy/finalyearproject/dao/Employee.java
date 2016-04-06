@@ -11,23 +11,23 @@ public class Employee {
 
 	// Attributes
 	private int employeeId;
-	
-	@Size(min=2, max=100, message="Name must be between 2-100 characters")
+
+	@Size(min = 2, max = 100, message = "Name must be between 2-100 characters")
 	private String firstName;
-	
-	@Size(min=2, max=100, message="Surname must be between 2-100 characters")
+
+	@Size(min = 2, max = 100, message = "Surname must be between 2-100 characters")
 	private String surname;
-	private String startDate;
-	
-	@Email(message="You must enter a valid email address.") 
+	// private String startDate;
+
+	@Email(message = "You must enter a valid email address.")
 	String email;
-	
-	@Min(value=0, message="You must select a department.")
+
+	@Min(value = 0, message = "You must select a department.")
 	private int departmentId;
 
 	// Simulation input metrics
-	@Max(value=100, message="Value must be between 0-100")
-	@Min(value=0, message="Value must be between 0-100")
+	@Max(value = 100, message = "Value must be between 0-100")
+	@Min(value = 0, message = "Value must be between 0-100")
 	private int intelligence, patience, experience, motivation, empathy, initiative, communication;
 
 	// Constructors
@@ -37,7 +37,6 @@ public class Employee {
 	public Employee(String firstName, String surname, String startDate, int departmentId) {
 		this.firstName = firstName;
 		this.surname = surname;
-		this.startDate = startDate;
 		this.departmentId = departmentId;
 	}
 
@@ -67,14 +66,6 @@ public class Employee {
 		this.surname = surname;
 	}
 
-	public String getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
-	}
-
 	public int getDepartmentId() {
 		return departmentId;
 	}
@@ -82,7 +73,7 @@ public class Employee {
 	public void setDepartmentId(int departmentId) {
 		this.departmentId = departmentId;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -130,7 +121,7 @@ public class Employee {
 	public void setExperience(int experience) {
 		if (experience > 100)
 			this.experience = 100;
-		else 
+		else
 			this.experience = experience;
 	}
 
@@ -156,8 +147,7 @@ public class Employee {
 	@Override
 	public String toString() {
 		return "Employee [employeeId=" + employeeId + ", firstName=" + firstName + ", surname=" + surname
-				+ ", startDate=" + startDate + ", departmentId=" + departmentId + ", intelligence=" + intelligence
-				+ ", patience=" + patience + ", experience=" + experience + ", motivation=" + motivation + ", empathy="
-				+ empathy + "]";
+				+ ", departmentId=" + departmentId + ", intelligence=" + intelligence + ", patience=" + patience
+				+ ", experience=" + experience + ", motivation=" + motivation + ", empathy=" + empathy + "]";
 	}
 }

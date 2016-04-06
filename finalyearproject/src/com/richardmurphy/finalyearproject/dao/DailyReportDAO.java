@@ -48,7 +48,7 @@ public class DailyReportDAO {
 				report.setCustSat(rs.getInt("custSat"));
 				report.setCallQuality(rs.getInt("callQuality"));
 				report.setNumCalls(rs.getInt("numCalls"));
-				report.setDate(rs.getString("dateLogged"));
+				report.setDate(rs.getDate("dateLogged"));
 				report.setSkillLevel(rs.getInt("skillLevel"));
 				
 				return report;
@@ -76,7 +76,7 @@ public class DailyReportDAO {
 						report.setCustSat(rs.getInt("custSat"));
 						report.setCallQuality(rs.getInt("callQuality"));
 						report.setNumCalls(rs.getInt("numCalls"));
-						report.setDate(rs.getString("dateLogged"));
+						report.setDate(rs.getDate("dateLogged"));
 						report.setSkillLevel(rs.getInt("skillLevel"));
 
 						return report;
@@ -165,7 +165,35 @@ public class DailyReportDAO {
 						report.setCustSat(rs.getInt("custSat"));
 						report.setCallQuality(rs.getInt("callQuality"));
 						report.setNumCalls(rs.getInt("numCalls"));
-						report.setDate(rs.getString("dateLogged"));
+						report.setDate(rs.getDate("dateLogged"));
+
+						return report;
+					}
+
+				});
+	}
+
+	public List<DailyReport> getDailyReportsBySimIdAndEmpId(int simId, int empId) {
+		MapSqlParameterSource params = new MapSqlParameterSource("simId", simId);
+		params.addValue("empId", empId);
+
+		return jdbc.query("select * from dailyReport where simId = :simId and employeeId = :empId order by employeeId, dateLogged", params,
+				new RowMapper<DailyReport>() {
+
+					@Override
+					public DailyReport mapRow(ResultSet rs, int rowNum) throws SQLException {
+						DailyReport report = new DailyReport();
+
+						report.setEmployeeId(rs.getInt("employeeId"));
+						report.setSimId(rs.getInt("simId"));
+						report.setAht(rs.getInt("aht"));
+						report.setAcw(rs.getInt("acw"));
+						report.setFcr(rs.getInt("fcr"));
+						report.setCustSat(rs.getInt("custSat"));
+						report.setCallQuality(rs.getInt("callQuality"));
+						report.setNumCalls(rs.getInt("numCalls"));
+						report.setDate(rs.getDate("dateLogged"));
+						report.setSkillLevel(rs.getInt("skillLevel"));
 
 						return report;
 					}

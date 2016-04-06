@@ -95,7 +95,12 @@ public class SimEmployee {
 	}
 
 	public void setExperience(int experience) {
-		this.experience = experience;
+		// capping increment
+		if (experience > 100) {
+			this.experience = 100;
+		} else {
+			this.experience = experience;
+		}
 	}
 
 	public int getMotivation() {
@@ -103,7 +108,12 @@ public class SimEmployee {
 	}
 
 	public void setMotivation(int motivation) {
-		this.motivation = motivation;
+		// capping decrement
+		if (motivation < 0) {
+			this.motivation = 0;
+		} else {
+			this.motivation = motivation;
+		}
 	}
 
 	public int getEmpathy() {
